@@ -6,7 +6,7 @@ namespace SitoVetrina.Models
 {
     public class ProdottoMongo
     {
-        public ProdottoMongo(string _id="",string nome="",decimal prezzo=0,string immagine="", string descrizione = "", int quantità=0)
+        public ProdottoMongo(string _id="",string nome="",decimal prezzo=0,string immagine="", string descrizione = "", int quantità=1)
         {
             if(_id!="")
             {

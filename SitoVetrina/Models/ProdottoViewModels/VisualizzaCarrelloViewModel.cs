@@ -11,9 +11,9 @@ namespace SitoVetrina.Models.ProdottoViewModels
     public class VisualizzaCarrelloViewModel
     {
         public string testoRicerca { get; set; }
-        public List<Prodotto> ListProdotti { get; set; }
+        public List<ProdottoMongo> ListProdotti { get; set; }
         public string Quantità { get; set; }
-        public void InviaProdotti(List<Prodotto> prodotti)
+        public void InviaProdotti(List<ProdottoMongo> prodotti)
         {
             ListProdotti = prodotti;
         }

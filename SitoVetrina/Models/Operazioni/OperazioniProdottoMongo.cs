@@ -27,13 +27,13 @@ namespace SitoVetrina.Models.Operazioni
             List<ProdottoMongo> prodotti = prodottiCollection.Find(fil).ToList();
             return prodotti;
         }
-        public string CreaProdotto(MongoDBContext context, string nome, string descrizione, string prezzo, string nomeImmagine)
+        public string CreaProdotto(MongoDBContext context, string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
             try
             {
                 var database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                ProdottoMongo prodotto = new ProdottoMongo("",nome,Convert.ToDecimal(prezzo)/100, nomeImmagine,descrizione); 
+                ProdottoMongo prodotto = new ProdottoMongo("",nome,prezzo, nomeImmagine,descrizione); 
                 prodottiCollection.InsertOne(prodotto);
                 var fil = Builders<ProdottoMongo>.Filter.Eq("Immagine", nomeImmagine);
                 string codiceProdotto = prodottiCollection.Find(fil).First()._id.ToString();
@@ -60,7 +60,7 @@ namespace SitoVetrina.Models.Operazioni
                 return new ProdottoMongo();
             }
         }
-        public string ModificaProdotto(MongoDBContext context, string codiceProdotto, string nome, string descrizione, string prezzo, string nomeImmagine)
+        public string ModificaProdotto(MongoDBContext context, string codiceProdotto, string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace SitoVetrina.Models.Operazioni
                 var database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
                 var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
-                ProdottoMongo prodotto= new ProdottoMongo(codiceProdotto, nome, Convert.ToDecimal(prezzo), nomeImmagine, descrizione);
+                ProdottoMongo prodotto= new ProdottoMongo(codiceProdotto, nome, prezzo, nomeImmagine, descrizione);
                 prodottiCollection.ReplaceOne(fil,prodotto);
                 return "Nessun errore";
             }

@@ -36,6 +36,7 @@ namespace SitoVetrina.Controllers
         {
             IOperazioniProdotto operazioniProdotto= new OperazioniProdotto();
             OperazioniProdottoMongo operazioniProdottoMongo = new OperazioniProdottoMongo();
+            OperazioniCarrelloMongo operazioniCarrello= new OperazioniCarrelloMongo();
             IndexViewModel indexModel = new IndexViewModel(1);
             List<ProdottoMongo> prodotti;
             string url = HttpContext.Request.GetDisplayUrl();
