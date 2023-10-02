@@ -18,11 +18,11 @@ namespace SitoVetrina.Models.Operazioni
         {
             try
             {
-                var database = context.TakeDatabase();
-                var id = new ObjectId(idUser.Replace("-", ""));
+                IMongoDatabase database = context.TakeDatabase();
+                ObjectId id = new ObjectId(idUser.Replace("-", ""));
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id);
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id);
                 ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
                 return Carrello.Prodotti;
             }
@@ -35,12 +35,12 @@ namespace SitoVetrina.Models.Operazioni
         {
             try
             {
-                var database = context.TakeDatabase();
-                var id1 = new ObjectId(idUser.Replace("-", ""));
-                var id2 = new ObjectId(idProdotto);
+                IMongoDatabase database = context.TakeDatabase();
+                ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
+                ObjectId id2 = new ObjectId(idProdotto);
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
                 ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
                 return Carrello.Prodotti;
             }
@@ -55,20 +55,20 @@ namespace SitoVetrina.Models.Operazioni
             {
                 OperazioniProdottoMongo operazioniProdotto= new OperazioniProdottoMongo();
 
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
                 if (VisualizzaProdottiCarrello(context, idUser, idProdotto).Count != 0)
                 {
-                    var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
-                    var update = Builders<ProdottoCarrello>.Update.Inc("Prodotti.$.Quantità",1);
+                    FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
+                    UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Inc("Prodotti.$.Quantità",1);
 
                     carrelloCollection.UpdateOne(fil, update);
                 }
                 else
                 {
                     ProdottoMongo prodotto = operazioniProdotto.DettagliProdotto(context, idProdotto);
-                    var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", "")));
+                    FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", "")));
                     ProdottoCarrello carrello = carrelloCollection.Find(fil).FirstOrDefault();
                     if ((carrello!=null)&&(carrello.Prodotti != null))
                     {
@@ -94,11 +94,11 @@ namespace SitoVetrina.Models.Operazioni
         {
             try
             {
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
-                var update = Builders<ProdottoCarrello>.Update.Set("Prodotti.$.Quantità", quantità);
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
+                UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Set("Prodotti.$.Quantità", quantità);
 
                 carrelloCollection.UpdateOne(fil, update);
                 return "Prodotto aggiornato";
@@ -112,15 +112,15 @@ namespace SitoVetrina.Models.Operazioni
         {
             try
             {
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
 
-                var id1 = new ObjectId(idUser.Replace("-", ""));
-                var id2 = new ObjectId(idProdotto);
+                ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
+                ObjectId id2 = new ObjectId(idProdotto);
 
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) ;
-                var update = Builders<ProdottoCarrello>.Update.PullFilter(carrello => carrello.Prodotti, prodotto => prodotto._id == id2);
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) ;
+                UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.PullFilter(carrello => carrello.Prodotti, prodotto => prodotto._id == id2);
 
                 carrelloCollection.UpdateOne(fil,update);
                 return "Prodotto eliminato";
@@ -135,10 +135,10 @@ namespace SitoVetrina.Models.Operazioni
             try
             {
                 ObjectId id = new ObjectId(idUser);
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Carrello");
 
-                var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
                 prodottiCollection.DeleteOne(fil);
                 return "Prodotti Comprati";
             }

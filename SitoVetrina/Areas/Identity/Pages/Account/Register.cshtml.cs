@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using SitoVetrina.Areas.Identity.Data;
+using SitoVetrina.Models;
 
 namespace SitoVetrina.Areas.Identity.Pages.Account
 {
@@ -44,6 +45,7 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+
         }
 
         /// <summary>
@@ -70,7 +72,8 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [BindProperty]
-        public string[] Roles { get; set; }
+        public string[] SelectedRoles { get; set; }
+        public IList<string> Roles { get; set; }
         public class InputModel
         {
             /// <summary>
@@ -127,11 +130,11 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
-                    if (User.IsInRole("Admin") && Roles.Contains("User")&&Roles.Contains("Admin"))
+                    if (User.IsInRole("Admin") && SelectedRoles.Contains("User")&& SelectedRoles.Contains("Admin"))
                     {
-                        var result1 = await _userManager.AddToRolesAsync(user, Roles);
+                        var result1 = await _userManager.AddToRolesAsync(user, SelectedRoles);
                     }
-                    else if(User.IsInRole("Admin") && Roles.Contains("Admin"))
+                    else if(User.IsInRole("Admin") && SelectedRoles.Contains("Admin"))
                     {
                         var result1 = await _userManager.AddToRoleAsync(user, "Admin");
                     }

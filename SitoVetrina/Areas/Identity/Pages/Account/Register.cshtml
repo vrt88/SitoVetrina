@@ -29,10 +29,11 @@
                 </div>
                 @if(User.IsInRole("Admin"))
                 {
-                    <input type="checkbox" asp-for="Roles[0]" value="User"/>
-                    <label>User</label>
-                    <input type="checkbox" asp-for="Roles[1]" value="Admin" />
-                    <label>Admin</label>
+                    for(int i=0;i<Model.Roles.Count;i++)
+                    {
+                        <input type="checkbox" asp-for="SelectedRoles[i]" value="User" />
+                        <label>Model.Roles[i]</label>
+                    }
                 }
                 <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary mt-3">Register</button>
             </form>

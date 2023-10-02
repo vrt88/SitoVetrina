@@ -13,17 +13,17 @@ namespace SitoVetrina.Models.Operazioni
     {
         public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context,int pagina)
         {
-            var database=context.TakeDatabase();
+            IMongoDatabase database =context.TakeDatabase();
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-            var fil = Builders<ProdottoMongo>.Filter.Empty;
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Empty;
             List<ProdottoMongo>prodotti = prodottiCollection.Find(fil).Skip(pagina*16).Limit(16).ToList();
             return prodotti;
         }
         public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context, string parametroRicerca, int pagina)
         {
-            var database = context.TakeDatabase();
+            IMongoDatabase database = context.TakeDatabase();
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-            var fil = Builders<ProdottoMongo>.Filter.Eq("Nome",parametroRicerca);
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Nome",parametroRicerca);
             List<ProdottoMongo> prodotti = prodottiCollection.Find(fil).Skip(pagina * 16).Limit((pagina + 1) * 16).ToList();
             return prodotti;
         }
@@ -31,11 +31,11 @@ namespace SitoVetrina.Models.Operazioni
         {
             try
             {
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
                 ProdottoMongo prodotto = new ProdottoMongo("",nome,prezzo, nomeImmagine,descrizione); 
                 prodottiCollection.InsertOne(prodotto);
-                var fil = Builders<ProdottoMongo>.Filter.Eq("Immagine", nomeImmagine);
+                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Immagine", nomeImmagine);
                 string codiceProdotto = prodottiCollection.Find(fil).First()._id.ToString();
                 return codiceProdotto;
             }
@@ -49,9 +49,9 @@ namespace SitoVetrina.Models.Operazioni
             try
             {
                 ObjectId id = new ObjectId(codiceProdotto);
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
                 ProdottoMongo prodotto = prodottiCollection.Find(fil).First();
                 return prodotto;
             }
@@ -65,9 +65,9 @@ namespace SitoVetrina.Models.Operazioni
             try
             {
                 ObjectId id = new ObjectId(codiceProdotto);
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
                 ProdottoMongo prodotto= new ProdottoMongo(codiceProdotto, nome, prezzo, nomeImmagine, descrizione);
                 prodottiCollection.ReplaceOne(fil,prodotto);
                 return "Nessun errore";
@@ -82,9 +82,9 @@ namespace SitoVetrina.Models.Operazioni
             try
             {
                 ObjectId id = new ObjectId(codiceProdotto);
-                var database = context.TakeDatabase();
+                IMongoDatabase database = context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);      
+                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);      
                 prodottiCollection.DeleteOne(fil);
                 return "Nessun errore";
             }
