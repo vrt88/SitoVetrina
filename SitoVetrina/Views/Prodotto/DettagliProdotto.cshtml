@@ -1,0 +1,18 @@
+﻿@model SitoVetrina.Models.ProdottoViewModels.DettagliProdottoViewModel
+@{
+    ViewData["Title"] = @Model.prodotto.Nome;
+}
+<div class="container-fluid my-5">
+    <a asp-controller="Home" asp-action="Index" class="btn text-black">
+        <h4>&lt&lt Indietro</h4>
+    </a>
+    <div class="text-center">
+        <h1>@ViewData["Title"]</h1>
+    </div>
+    <partial name="_DettagliProdottoPartial.cshtml" />
+</div>
+@section cerca{
+    <form class="col-4 mb-3 mb-lg-0" role="search" action="/">
+        <input asp-page="/" asp-route-id=@Model.testoRicerca asp-for=@Model.testoRicerca id="searchBar" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+    </form>
+}

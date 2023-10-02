@@ -1,0 +1,57 @@
+﻿@model SitoVetrina.Models.ProdottoViewModels.VisualizzaCarrelloViewModel
+@{
+    ViewData["Title"] = "Carrello";
+}  
+<div class="text-center">
+    <h1>@ViewData["Title"]</h1>
+</div>
+<hr />
+@if (Model.ListProdotti.Count == 0)
+{
+    <div class="text-center">
+        <h2>Nessun prodotto trovato</h2>
+    </div>
+}
+else
+{
+    @foreach (var item in @Model.ListProdotti)
+    {
+        <form>
+            <div class="media border rounded-4">
+                <div class="row">
+                    <img class="align-self-start mr-3 col-auto" src="/Images\\@item.Immagine" style="width: 120px; height: 120px;">
+                    <div class="media-body col-11">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <strong class="text-gray-dark" style="font-size:large">@item.Nome</strong>
+                            <a asp-controller="Prodotto" asp-action="RimuoviProdottoCarrello"  asp-route-id=@item.CodiceProdotto class="btn-close"></a>                                                  
+                        </div>  
+                        <div class="col-1">
+                            <select class="form-select" asp-for="Quantità">
+                                <option selected="selected" value="@item.Quantità">@item.Quantità</option>
+                                <option value ="1">1</option>
+                                <option value ="2">2</option>
+                                <option value ="3">3</option>
+                                <option value ="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                            </select>
+                        </div>               
+                        <span class="d-block" style="font-size:large">@string.Format("{0:F2}",@item.Prezzo*@item.Quantità) €</span>
+                        <button asp-controller="Prodotto" asp-action="AggiornaProdottoCarrello" asp-route-id=@item.CodiceProdotto class="btn btn-info col-2">Aggiorna quantità</button>  
+                        <button asp-controller="Prodotto" asp-action="CompraProdottoCarrello" asp-route-id=@item.CodiceProdotto class="btn btn-success col-2">Compra</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    <a asp-controller="Prodotto" asp-action="CompraProdottiCarrello"  class="btn btn-success col-12 mt-3">Compra prodotti (@Model.ListProdotti.Count)</a>
+}
+@section cerca{
+    <form class="col-4 mb-3 mb-lg-0" role="search" action="/">
+        <input asp-page="/" asp-route-id=@Model.testoRicerca asp-for=@Model.testoRicerca id="searchBar" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+    </form>
+}
+

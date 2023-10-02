@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SitoVetrina.Areas.Identity.Data
+@using SitoVetrina.Models
+@using SitoVetrina.Context
+@using SitoVetrina.Models.Operazioni
+@using SitoVetrina.Models.ProdottoViewModels
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject DapperContext context
+
+<div class="col">
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="d-flex flex-row-reverse">
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle text-white" data-bs-toggle="dropdown" aria-expanded="false">
+
+                    <img src="https://cdn2.iconfinder.com/data/icons/user-23/512/User_Administrator_2.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <a href="/Identity/Account/Register" class="dropdown-item nav-link btn btn-link w-100 text-center mt-2">Crea user</a>
+                    <form>
+                        <button asp-controller="Home" asp-action="VisualizzaUtenti" class="dropdown-item nav-link btn btn-link w-100 text-center">Visualizza users</button>
+                    </form>                   
+                    <hr />
+                    <form id="logoutForm" class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button id="logout" type="submit" class="nav-link btn btn-link w-100">Logout</button>
+                    </form>
+                </ul>
+            </div>
+            <div class="text-light">
+                Admin
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-row-reverse text-center">
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle text-white" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://th.bing.com/th/id/OIP.Lpx9j83qR_cfQuaPHuvwWQHaHw?pid=ImgDet&rs=1" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <form id="logoutForm" class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button id="logout" type="submit" class="nav-link btn btn-link w-100">Logout</button>
+                    </form>
+                </ul>
+            </div>
+            <div class="text-light">
+                User
+            </div>
+        </div>
+    }
+
+}
+else
+{
+    <div class="text-end">
+        <a class="btn btn-outline-light me-2" href="/Identity/Account/Login">Login</a>
+        <a class="btn btn-warning" href="/Identity/Account/Register">Sign-up</a>
+    </div>
+}
+</div>

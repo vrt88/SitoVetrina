@@ -1,0 +1,51 @@
+﻿@model SitoVetrina.Models.IndexViewModel
+@{
+    ViewData["Title"] = "Home";
+}
+<form id="account" method="post">
+    @if (Model.ListProdotti.Count == 0)
+    {
+        <div class="text-center">
+            <h1>Nessun prodotto trovato</h1>
+        </div>
+    }
+    else
+    {
+        <div class="album bg-body-tertiary">
+            <div class="container-fluid my-5">
+                <div class="row">
+                    @foreach (var item in Model.ListProdotti)
+                    {
+                        <div class="col-3">
+                            <div class="card shadow-sm" >
+                                <div class="card-img-bottom" style="height:200px">
+                                    <a asp-controller="Prodotto" asp-action="DettagliProdotto" asp-route-id=@item._id.ToString()><img class="card-img-top" src=/Images\\@item.Immagine height="200"></a>
+                                </div>
+                                <div class="card-body bg-info">
+                                    <h1 style="font-size:medium">@item.Nome</h1>
+                                    <h2 style="font-size:medium">@string.Format("{0:F2}",@item.Prezzo) €</h2>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    @if(Model.ListProdotti.Count == 12)
+    {
+        <div class="text-center">
+            <a asp-controller="Home" asp-action="PaginaIndietro" asp-route-id=@Model.NumeroPagina class="btn text-black">
+                <h4>&lt&lt Indietro</h4>
+            </a>
+            <a asp-controller="Home" asp-action="PaginaAvanti" asp-route-id=@Model.NumeroPagina class="btn text-black">
+                <h4>Avanti &gt&gt</h4>
+            </a>
+        </div>
+    }
+</form>
+@section cerca{
+    <form class="col-4 mb-3 mb-lg-0" role="search" action="/">
+        <input asp-page="/" asp-route-id=@Model.testoRicerca asp-for=@Model.testoRicerca id ="searchBar" type="text" class="form-control" placeholder="Search..." aria-label="Search">
+    </form>
+}

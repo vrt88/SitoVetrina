@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using SitoVetrina.Areas.Identity.Data;
+@model SitoVetrina.Models.VisualizzaUtentiViewModel
+@{
+    ViewData["Title"] = "VisualizzaUsers";
+}  
+
+@inject UserManager<ApplicationUser> UserManager
+<div class="text-center">
+    <h1>@ViewData["Title"]</h1>
+</div>
+<hr />
+<form class="col-4 mb-3 mb-lg-0" role="search">
+    <input asp-controller="Home" asp-action="VisualizzaUtenti" asp-route-id=@Model.testoRicerca asp-for=@Model.testoRicerca id="searchBar" type="text" class="form-control" placeholder="Cerca utenti..." aria-label="Search">
+</form>
+@foreach (var item in @Model.ListUsers)
+{
+    <form>
+        <div class="pb-3 mb-0 small lh-sm border rounded-4 w-100 mt-2 bg-light">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong class="text-gray-dark">@item.UserName</strong>
+                    <br />
+                    <strong class="text-gray-dark">ID: </strong>
+                    @item.Id
+                    <br />
+                    <br />
+                    <strong class="text-gray-dark">Seleziona ruoli: </strong>
+                    <br />
+                    <input type="checkbox" asp-for="@Model.ListRoles[0]" value="User" />
+                    <label>User</label>
+                    <br />
+                    <input type="checkbox" asp-for="@Model.ListRoles[1]" value="Admin" />
+                    <label>Admin</label>
+                </div>    
+                <div>
+                    <h3>Roles:</h3>
+                    @foreach (var role in UserManager.GetRolesAsync(await UserManager.FindByIdAsync(item.Id)).Result)
+                    {
+                        @role<br />
+                    }
+                </div>
+                <a asp-controller="Home" asp-action="EliminaUtente" asp-route-id=@item.Id class="btn-close"></a>
+            </div>
+            <button asp-controller="Home" asp-action="ModificaRuolo" asp-route-id=@item.Id asp-route-testoRicerca=@Model.testoRicerca class="btn btn-info col-2 end-0">Modifica Ruolo</button>
+        </div>                   
+    </form>
+}
+
