@@ -70,7 +70,7 @@ namespace SitoVetrina.Models.Operazioni
                     ProdottoMongo prodotto = operazioniProdotto.DettagliProdotto(context, idProdotto);
                     var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", "")));
                     ProdottoCarrello carrello = carrelloCollection.Find(fil).FirstOrDefault();
-                    if (carrello != null)
+                    if ((carrello!=null)&&(carrello.Prodotti != null))
                     {
                         carrello.Prodotti.Add(prodotto);
                         carrelloCollection.ReplaceOne(fil, carrello);
@@ -108,42 +108,39 @@ namespace SitoVetrina.Models.Operazioni
                 return ex.Message;
             }
         }
-        public string EliminaProdottoCarrello(DapperContext context, string idUser, string idProdotto)
+        public string EliminaProdottoCarrello(MongoDBContext context, string idUser, string idProdotto)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"DELETE FROM Carrello WHERE idProdotto=@idProdotto AND idUser=@idUser";
+                var database = context.TakeDatabase();
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>() { { "idProdotto", idProdotto.ToUpper() }, { "idUser", idUser } };
+                var id1 = new ObjectId(idUser.Replace("-", ""));
+                var id2 = new ObjectId(idProdotto);
 
-                string query = formattableQuery.ToString();
-                using (var connection = context.CreateConnection())
-                {
-                    connection.QueryFirst(query, parameters);
-                }
-                return "";
+                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
+
+                var fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) ;
+                var update = Builders<ProdottoCarrello>.Update.PullFilter(carrello => carrello.Prodotti, prodotto => prodotto._id == id2);
+
+                carrelloCollection.UpdateOne(fil,update);
+                return "Prodotto eliminato";
             }
             catch (Exception ex)
             {
                 return ex.Message;
             }
         }
-        public string CompraProdottiCarrello(DapperContext context, string idUser)
+        public string CompraProdottiCarrello(MongoDBContext context, string idUser)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"DELETE FROM Carrello WHERE idUser=@idUser";
+                ObjectId id = new ObjectId(idUser);
+                var database = context.TakeDatabase();
+                IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Carrello");
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>() { { "idUser", idUser } };
-
-                string query = formattableQuery.ToString();
-                using (var connection = context.CreateConnection())
-                {
-                    connection.QueryFirst(query, parameters);
-                }
-                return "";
+                var fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+                prodottiCollection.DeleteOne(fil);
+                return "Prodotti Comprati";
             }
             catch (Exception ex)
             {

@@ -11,20 +11,20 @@ namespace SitoVetrina.Models.Operazioni
 {
     public class OperazioniProdottoMongo 
     {
-        public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context)
+        public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context,int pagina)
         {
             var database=context.TakeDatabase();
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
             var fil = Builders<ProdottoMongo>.Filter.Empty;
-            List<ProdottoMongo>prodotti = prodottiCollection.Find(fil).ToList();
+            List<ProdottoMongo>prodotti = prodottiCollection.Find(fil).Skip(pagina*16).Limit(16).ToList();
             return prodotti;
         }
-        public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context, string parametroRicerca)
+        public List<ProdottoMongo> VisualizzaProdotti(MongoDBContext context, string parametroRicerca, int pagina)
         {
             var database = context.TakeDatabase();
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
             var fil = Builders<ProdottoMongo>.Filter.Eq("Nome",parametroRicerca);
-            List<ProdottoMongo> prodotti = prodottiCollection.Find(fil).ToList();
+            List<ProdottoMongo> prodotti = prodottiCollection.Find(fil).Skip(pagina * 16).Limit((pagina + 1) * 16).ToList();
             return prodotti;
         }
         public string CreaProdotto(MongoDBContext context, string nome, string descrizione, decimal prezzo, string nomeImmagine)

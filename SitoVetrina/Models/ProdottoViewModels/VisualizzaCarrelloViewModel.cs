@@ -15,7 +15,14 @@ namespace SitoVetrina.Models.ProdottoViewModels
         public string Quantità { get; set; }
         public void InviaProdotti(List<ProdottoMongo> prodotti)
         {
-            ListProdotti = prodotti;
+            if(prodotti!=null)
+            {
+                ListProdotti = prodotti;
+            }
+            else
+            {
+                ListProdotti= new List<ProdottoMongo>();    
+            }
         }
     }
 }

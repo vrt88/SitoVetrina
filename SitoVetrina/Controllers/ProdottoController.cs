@@ -82,6 +82,7 @@ namespace SitoVetrina.Controllers
         public async Task<IActionResult> Elimina()
         {
             OperazioniProdottoMongo operazioniProdotto = new OperazioniProdottoMongo();
+            OperazioniCarrelloMongo operazioniCarrelloMongo= new OperazioniCarrelloMongo();
             OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
             string url = HttpContext.Request.GetDisplayUrl();
             string CodiceProdotto = url.Substring(url.IndexOf("Elimina/") + 8);
@@ -89,6 +90,7 @@ namespace SitoVetrina.Controllers
             string immagineVecchia = prodottoVecchio.Immagine;
             operazioniImmagine.EliminaImmagine(immagineVecchia);
             operazioniProdotto.EliminaProdotto(MongoContext, CodiceProdotto);
+            operazioniCarrelloMongo.EliminaProdottoCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", ""), CodiceProdotto);  
             return await Task.FromResult(RedirectToAction("Index","Home"));
         }
         [HttpPost]
@@ -109,37 +111,37 @@ namespace SitoVetrina.Controllers
         {
             OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
             VisualizzaCarrelloViewModel visualizzaCarrelloViewModel = new VisualizzaCarrelloViewModel();
-            visualizzaCarrelloViewModel.InviaProdotti(operazioniCarrello.VisualizzaProdottiCarrello(MongoContext, UserManager.GetUserId(User)));
+            visualizzaCarrelloViewModel.InviaProdotti(operazioniCarrello.VisualizzaProdottiCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", "")));
             return View(visualizzaCarrelloViewModel);
         }
         public async Task<IActionResult> RimuoviProdottoCarrello()
         {
-            OperazioniCarrello operazioniCarrello = new OperazioniCarrello();
+            OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
             string url = HttpContext.Request.GetDisplayUrl();
             string codiceProdotto = url.Substring(url.IndexOf("RimuoviProdottoCarrello/") + 24);
-            operazioniCarrello.EliminaProdottoCarrello(context, UserManager.GetUserId(User), codiceProdotto);
+            operazioniCarrello.EliminaProdottoCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> CompraProdottoCarrello()
         {
-            OperazioniCarrello operazioniCarrello = new OperazioniCarrello();
+            OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
             string url = HttpContext.Request.GetDisplayUrl();
-            string codiceProdotto = url.Substring(url.IndexOf("CompraProdottoCarrello/") + 23);
-            operazioniCarrello.EliminaProdottoCarrello(context, UserManager.GetUserId(User), codiceProdotto);
+            string codiceProdotto = url.Substring(url.IndexOf("CompraProdottoCarrello/") + 23,24);
+            operazioniCarrello.EliminaProdottoCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> CompraProdottiCarrello()
         {
-            OperazioniCarrello operazioniCarrello = new OperazioniCarrello();
-            operazioniCarrello.CompraProdottiCarrello(context,UserManager.GetUserId(User));
+            OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
+            operazioniCarrello.CompraProdottiCarrello(MongoContext,UserManager.GetUserId(User).Replace("-",""));
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> AggiornaProdottoCarrello(VisualizzaCarrelloViewModel visualizzaCarrelloViewModel)
         {
-            OperazioniCarrello operazioniCarrello = new OperazioniCarrello();
+            OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
             string url = HttpContext.Request.GetDisplayUrl();
-            string codiceProdotto = url.Substring(url.IndexOf("AggiornaProdottoCarrello/") + 25);
-            operazioniCarrello.AggiornaQuantitàProdotto(context, UserManager.GetUserId(User),codiceProdotto,Convert.ToInt16(visualizzaCarrelloViewModel.Quantità));
+            string codiceProdotto = url.Substring(url.IndexOf("AggiornaProdottoCarrello/") + 25,24);
+            operazioniCarrello.AggiornaQuantitàProdotto(MongoContext, UserManager.GetUserId(User),codiceProdotto,Convert.ToInt16(visualizzaCarrelloViewModel.Quantità));
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
     }

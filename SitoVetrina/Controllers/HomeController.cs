@@ -37,19 +37,35 @@ namespace SitoVetrina.Controllers
             IOperazioniProdotto operazioniProdotto= new OperazioniProdotto();
             OperazioniProdottoMongo operazioniProdottoMongo = new OperazioniProdottoMongo();
             OperazioniCarrelloMongo operazioniCarrello= new OperazioniCarrelloMongo();
-            IndexViewModel indexModel = new IndexViewModel(1);
+            IndexViewModel indexModel ;
             List<ProdottoMongo> prodotti;
             string url = HttpContext.Request.GetDisplayUrl();
             string parametroRicerca;
-
-            if (url.Contains("?testoRicerca="))
+            int numeroPagina=0;
+            if (url.Contains("Avanti"))
             {
-                parametroRicerca = url.Substring(url.IndexOf("?testoRicerca=") + 14);
-                prodotti = parametroRicerca.Count() >= 3 ? operazioniProdottoMongo.VisualizzaProdotti(_mongoContext, parametroRicerca) : operazioniProdottoMongo.VisualizzaProdotti(_mongoContext);
+                numeroPagina = Convert.ToInt16(url.Substring(url.IndexOf("index/") + 6).Replace(",Avanti",""));
+                numeroPagina++;
+                indexModel = new IndexViewModel(numeroPagina);
+            }
+            else if (url.Contains("Indietro"))
+            {
+                numeroPagina = Convert.ToInt16(url.Substring(url.IndexOf("index/") + 6).Replace(",Indietro", ""));
+                numeroPagina--;
+                indexModel = new IndexViewModel(numeroPagina);
             }
             else
             {
-                prodotti = operazioniProdottoMongo.VisualizzaProdotti(_mongoContext);
+                indexModel = new IndexViewModel(0);
+            }
+            if (url.Contains("?testoRicerca="))
+            {
+                parametroRicerca = url.Substring(url.IndexOf("?testoRicerca=") + 14);
+                prodotti = parametroRicerca.Count() >= 3 ? operazioniProdottoMongo.VisualizzaProdotti(_mongoContext, parametroRicerca,numeroPagina) : operazioniProdottoMongo.VisualizzaProdotti(_mongoContext,numeroPagina);
+            }
+            else
+            {
+                prodotti = operazioniProdottoMongo.VisualizzaProdotti(_mongoContext,numeroPagina);
             }
             indexModel.InviaProdotti(prodotti);
             return View(indexModel);

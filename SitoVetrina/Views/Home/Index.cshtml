@@ -32,17 +32,20 @@
             </div>
         </div>
     }
-    @if(Model.ListProdotti.Count == 12)
-    {
-        <div class="text-center">
-            <a asp-controller="Home" asp-action="PaginaIndietro" asp-route-id=@Model.NumeroPagina class="btn text-black">
+    <div class="text-center">
+        @if(Model.NumeroPagina>0)
+        {
+            <a asp-controller="Home" asp-action="index" asp-route-id=@Model.NumeroPagina,Indietro class="btn text-black">
                 <h4>&lt&lt Indietro</h4>
             </a>
-            <a asp-controller="Home" asp-action="PaginaAvanti" asp-route-id=@Model.NumeroPagina class="btn text-black">
+        }
+        @if(Model.ListProdotti.Count==16)
+        {
+            <a asp-controller="Home" asp-action="index" asp-route-id=@Model.NumeroPagina,Avanti class="btn text-black">
                 <h4>Avanti &gt&gt</h4>
             </a>
-        </div>
-    }
+        }       
+    </div>
 </form>
 @section cerca{
     <form class="col-4 mb-3 mb-lg-0" role="search" action="/">
