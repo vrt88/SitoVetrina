@@ -25,12 +25,14 @@ namespace SitoVetrina.Controllers
         private readonly DapperContext _context;
         private readonly MongoDBContext _mongoContext;
         private readonly UserManager<ApplicationUser> _userManager;
-        public HomeController(ILogger<HomeController> logger, DapperContext context,UserManager<ApplicationUser> userManager,MongoDBContext mongoContext)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public HomeController(ILogger<HomeController> logger, DapperContext context,UserManager<ApplicationUser> userManager,MongoDBContext mongoContext, RoleManager<IdentityRole> roleManager)
         {
             _logger = logger;
             _context = context;
             _userManager= userManager;
             _mongoContext= mongoContext;
+            _roleManager= roleManager;
         }
         public IActionResult Index()
         {
@@ -72,7 +74,7 @@ namespace SitoVetrina.Controllers
         }
         public IActionResult VisualizzaUtenti()
         {
-            VisualizzaUtentiViewModel visualizzaUtentiViewModel = new VisualizzaUtentiViewModel();
+            VisualizzaUtentiViewModel visualizzaUtentiViewModel = new VisualizzaUtentiViewModel(_roleManager.Roles.ToList());
             OperazioniUsers operazioniUsers = new OperazioniUsers();
 
             string url = HttpContext.Request.GetDisplayUrl();
@@ -89,25 +91,22 @@ namespace SitoVetrina.Controllers
             
             return View(visualizzaUtentiViewModel);
         }
-        public async Task<IActionResult> ModificaRuolo(string id, List<string> ListRoles)
+        public async Task<IActionResult> ModificaRuolo(string id, List<string> ListSelectedRoles)
         {
 
             ApplicationUser user = await _userManager.FindByIdAsync(id);
+            IList<IdentityRole> roles = _roleManager.Roles.ToList();
 
-            await _userManager.RemoveFromRoleAsync(user, "Admin");
-            await _userManager.RemoveFromRoleAsync(user, "User");
-
-            if (ListRoles.Contains("User") && ListRoles.Contains("Admin"))
+            for(int i=0; i< ListSelectedRoles.Count; i++)    
             {
-                await _userManager.AddToRolesAsync(user, ListRoles);
-            }
-            else if(ListRoles.Contains("Admin"))
-            {
-                await _userManager.AddToRoleAsync(user, "Admin");
-            }
-            else
-            {
-                await _userManager.AddToRoleAsync(user, "User");
+                if (ListSelectedRoles[i] != "false")
+                {
+                    await _userManager.AddToRoleAsync(user, ListSelectedRoles[i]);
+                }
+                else
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roles[i].Name);
+                }
             }
             return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));
         }

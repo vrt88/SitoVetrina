@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -31,13 +32,16 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager
+        )
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -45,7 +49,8 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-
+            _roleManager = roleManager;
+            Roles = _roleManager.Roles.ToList();
         }
 
         /// <summary>
@@ -73,7 +78,8 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
         /// </summary>
         [BindProperty]
         public string[] SelectedRoles { get; set; }
-        public IList<string> Roles { get; set; }
+        public IList<IdentityRole> Roles { get; set; }
+        public int i { get; set; }
         public class InputModel
         {
             /// <summary>
@@ -130,17 +136,12 @@ namespace SitoVetrina.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
-                    if (User.IsInRole("Admin") && SelectedRoles.Contains("User")&& SelectedRoles.Contains("Admin"))
+                    foreach(string ruolo in SelectedRoles)
                     {
-                        var result1 = await _userManager.AddToRolesAsync(user, SelectedRoles);
-                    }
-                    else if(User.IsInRole("Admin") && SelectedRoles.Contains("Admin"))
-                    {
-                        var result1 = await _userManager.AddToRoleAsync(user, "Admin");
-                    }
-                    else
-                    {
-                        var result1 = await _userManager.AddToRoleAsync(user, "User");
+                        if(ruolo != "false") 
+                        {
+                            var result1 = await _userManager.AddToRoleAsync(user, ruolo);
+                        }
                     }
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

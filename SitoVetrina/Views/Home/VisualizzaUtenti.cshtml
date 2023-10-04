@@ -27,11 +27,12 @@
                     <br />
                     <strong class="text-gray-dark">Seleziona ruoli: </strong>
                     <br />
-                    <input type="checkbox" asp-for="@Model.ListRoles[0]" value="User" />
-                    <label>User</label>
-                    <br />
-                    <input type="checkbox" asp-for="@Model.ListRoles[1]" value="Admin" />
-                    <label>Admin</label>
+                    @for (int i = 0;i < Model.ListRoles.Count; i++)
+                    {
+                        <input type="checkbox" asp-for="@Model.ListSelectedRoles[i]" value="@Model.ListRoles[i]" />
+                        <label>@Model.ListRoles[i]</label>
+                        <br />
+                    }         
                 </div>    
                 <div>
                     <h3>Roles:</h3>
