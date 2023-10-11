@@ -122,7 +122,7 @@ namespace SitoVetrina.Models.ProdottoRepository
             {
                 IMongoDatabase database = _context.TakeDatabase();
                 ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
-                ObjectId id2 = new ObjectId(idProdotto);
+                ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
                 FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
@@ -181,7 +181,7 @@ namespace SitoVetrina.Models.ProdottoRepository
                 IMongoDatabase database = _context.TakeDatabase();
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto.Replace("-", "")));
                 UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Set("Prodotti.$.Quantità", quantità);
 
                 carrelloCollection.UpdateOne(fil, update);
@@ -199,7 +199,7 @@ namespace SitoVetrina.Models.ProdottoRepository
                 IMongoDatabase database = _context.TakeDatabase();
 
                 ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
-                ObjectId id2 = new ObjectId(idProdotto);
+                ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
 
                 IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
@@ -218,7 +218,7 @@ namespace SitoVetrina.Models.ProdottoRepository
         {
             try
             {
-                ObjectId id = new ObjectId(idUser);
+                ObjectId id = new ObjectId(idUser.Replace("-", ""));
                 IMongoDatabase database = _context.TakeDatabase();
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Carrello");
 

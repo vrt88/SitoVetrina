@@ -20,7 +20,7 @@ namespace SitoVetrina.Models.DbModels
         }
         public Prodotto(Guid codiceProdotto, string nome = "", decimal prezzo = 0, string immagine = "", string descrizione = "", int quantità = 1)
         {
-            CodiceProdotto = codiceProdotto;
+            CodiceProdotto = codiceProdotto;    
             Nome = nome.Replace('"', '\'');
             Descrizione = descrizione.Replace('"', '\'');
             Prezzo = prezzo;

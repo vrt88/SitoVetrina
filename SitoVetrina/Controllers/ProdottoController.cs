@@ -82,7 +82,7 @@ namespace SitoVetrina.Controllers
             string immagineVecchia = prodottoVecchio.Immagine;
             operazioniImmagine.EliminaImmagine(immagineVecchia);
             _prodottoRepository.EliminaProdotto( CodiceProdotto);
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User).Replace("-", ""), CodiceProdotto);  
+            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), CodiceProdotto);  
             return await Task.FromResult(RedirectToAction("Index","Home"));
         }
         [HttpPost]
@@ -99,24 +99,24 @@ namespace SitoVetrina.Controllers
         public IActionResult VisualizzaCarrello()
         {
             VisualizzaCarrelloViewModel visualizzaCarrelloViewModel = new VisualizzaCarrelloViewModel();
-            visualizzaCarrelloViewModel.InviaProdotti(_prodottoRepository.VisualizzaProdottiCarrello(UserManager.GetUserId(User).Replace("-", "")));
+            visualizzaCarrelloViewModel.InviaProdotti(_prodottoRepository.VisualizzaProdottiCarrello(UserManager.GetUserId(User)));
             return View(visualizzaCarrelloViewModel);
         }
         public async Task<IActionResult> RimuoviProdottoCarrello(string id)
         {
             string codiceProdotto = id;
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
+            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> CompraProdottoCarrello(string id)
         {
             string codiceProdotto = id;
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
+            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> CompraProdottiCarrello()
         {
-            _prodottoRepository.CompraProdottiCarrello(UserManager.GetUserId(User).Replace("-",""));
+            _prodottoRepository.CompraProdottiCarrello(UserManager.GetUserId(User));
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
         public async Task<IActionResult> AggiornaProdottoCarrello(VisualizzaCarrelloViewModel visualizzaCarrelloViewModel, string id)

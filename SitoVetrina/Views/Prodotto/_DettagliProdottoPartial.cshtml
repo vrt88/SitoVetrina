@@ -37,7 +37,14 @@
                 <hr />
                 <div class="row">
                     <div class="col-9">
-                        <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                        @if (Model.prodotto.CodiceProdotto != new Guid())
+                        {
+                            <b>Codice Prodotto:</b> @Model.prodotto.CodiceProdotto.ToString()
+                        }
+                        else
+                        {
+                            <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                        }
                         <br />
                         <div class="row">
                             <div class="col-3">
@@ -89,7 +96,14 @@
                 <hr />
                 <div class="row">
                     <div class="col-9">
-                        <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                        @if (Model.prodotto.CodiceProdotto != new Guid())
+                        {
+                            <b>Codice Prodotto:</b> @Model.prodotto.CodiceProdotto.ToString()
+                        }
+                        else
+                        {
+                            <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                        }
                         <br />
                         <b>Prezzo:</b> @string.Format("{0:F2}",@Model.prodotto.Prezzo) €
                     </div>
@@ -121,7 +135,14 @@
             <hr />
             <div class="row">
                 <div class="col-9">
-                    <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                    @if (Model.prodotto.CodiceProdotto!= new Guid())
+                    {
+                        <b>Codice Prodotto:</b> @Model.prodotto.CodiceProdotto.ToString()
+                    }
+                    else
+                    {
+                        <b>Codice Prodotto:</b> @Model.prodotto._id.ToString()
+                    }
                     <br />
                     <b>Prezzo:</b> @string.Format("{0:F2}",@Model.prodotto.Prezzo) €
                 </div>
