@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using SitoVetrina.Context;
 using SitoVetrina.Contracts;
+using SitoVetrina.Models.DbModels;
 using System.Collections.Generic;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 

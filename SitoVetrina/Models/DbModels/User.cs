@@ -1,11 +1,11 @@
-﻿namespace SitoVetrina.Models
+﻿namespace SitoVetrina.Models.DbModels
 {
     public class User
     {
         public User(string id, string userName)
         {
-            this.Id = id;
-            this.UserName = userName;
+            Id = id;
+            UserName = userName;
         }
         public User()
         {

@@ -5,6 +5,7 @@ using SitoVetrina.Context;
 using SitoVetrina.Contracts;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using MongoDB.Driver;
+using SitoVetrina.Models.DbModels;
 
 namespace SitoVetrina.Models.Operazioni
 {
@@ -131,5 +132,5 @@ namespace SitoVetrina.Models.Operazioni
                 return ex.Message;
             }
         }
-    }
+    }  
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using SitoVetrina.Areas.Identity.Data;
 using SitoVetrina.Context;
+using SitoVetrina.Models.DbModels;
 using System.ComponentModel;
 
 namespace SitoVetrina.Models.Operazioni

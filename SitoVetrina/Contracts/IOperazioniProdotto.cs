@@ -1,5 +1,5 @@
 ﻿using SitoVetrina.Context;
-using SitoVetrina.Models;
+using SitoVetrina.Models.DbModels;
 
 namespace SitoVetrina.Contracts
 {

@@ -5,7 +5,8 @@ using SitoVetrina.Areas.Identity.Data;
 using SitoVetrina.Context;
 using SitoVetrina.Contracts;
 using SitoVetrina.Data;
-using SitoVetrina.Models.Operazioni;
+using SitoVetrina.Models.ProdottoRepository;
+using SitoVetrina.Models.ProdottoViewModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SitoVetrinaContextConnection") ?? throw new InvalidOperationException("Connection string 'SitoVetrinaContextConnection' not found.");
@@ -19,8 +20,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<SitoVetrinaContext>();
 
 // Add services to the container.
+builder.Services.AddTransient<IProdottoRepository,ProdottoRepositoryMongo>();
 builder.Services.AddTransient<DapperContext>();
-builder.Services.AddTransient<MongoDBContext>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SitoVetrina.Areas.Identity.Data;
+using SitoVetrina.Models.DbModels;
 
 namespace SitoVetrina.Models
 {

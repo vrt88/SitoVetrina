@@ -9,6 +9,7 @@ using SitoVetrina.Areas.Identity.Data;
 using SitoVetrina.Context;
 using SitoVetrina.Contracts;
 using SitoVetrina.Models;
+using SitoVetrina.Models.DbModels;
 using SitoVetrina.Models.Operazioni;
 using SitoVetrina.Models.ProdottoViewModels;
 using System;
@@ -22,25 +23,22 @@ namespace SitoVetrina.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly DapperContext _context;
-        private readonly MongoDBContext _mongoContext;
+        private readonly IProdottoRepository _prodottoRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public HomeController(ILogger<HomeController> logger, DapperContext context,UserManager<ApplicationUser> userManager,MongoDBContext mongoContext, RoleManager<IdentityRole> roleManager)
+        private readonly DapperContext _context;
+        public HomeController(ILogger<HomeController> logger,UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager,IProdottoRepository prodottoRepository,DapperContext context)
         {
             _logger = logger;
-            _context = context;
             _userManager= userManager;
-            _mongoContext= mongoContext;
+            _prodottoRepository = prodottoRepository;
             _roleManager= roleManager;
+            _context=context;
         }
         public IActionResult Index(string testoRicerca,string pagina)
         {
-            IOperazioniProdotto operazioniProdotto= new OperazioniProdotto();
-            OperazioniProdottoMongo operazioniProdottoMongo = new OperazioniProdottoMongo();
-            OperazioniCarrelloMongo operazioniCarrello= new OperazioniCarrelloMongo();
             IndexViewModel indexModel ;
-            List<ProdottoMongo> prodotti;
+            List<Prodotto> prodotti;
             string url = HttpContext.Request.GetDisplayUrl();
             int numeroPagina=0;
             if (url.Contains("Avanti"))
@@ -61,29 +59,25 @@ namespace SitoVetrina.Controllers
             }
             if (testoRicerca!=null)
             {
-                prodotti = testoRicerca.Count() >= 3 ? operazioniProdottoMongo.VisualizzaProdotti(_mongoContext, testoRicerca,numeroPagina) : operazioniProdottoMongo.VisualizzaProdotti(_mongoContext,numeroPagina);
+                prodotti = testoRicerca.Count() >= 3 ? _prodottoRepository.VisualizzaProdotti(testoRicerca,numeroPagina) : _prodottoRepository.VisualizzaProdotti(numeroPagina);
             }
             else
             {
-                prodotti = operazioniProdottoMongo.VisualizzaProdotti(_mongoContext,numeroPagina);
+                prodotti = _prodottoRepository.VisualizzaProdotti(numeroPagina);
             }
             indexModel.InviaProdotti(prodotti);
             return View(indexModel);
         }
-        public IActionResult VisualizzaUtenti()
+        public IActionResult VisualizzaUtenti(string testoRicerca)
         {
             VisualizzaUtentiViewModel visualizzaUtentiViewModel = new VisualizzaUtentiViewModel(_roleManager.Roles.ToList());
             OperazioniUsers operazioniUsers = new OperazioniUsers();
 
-            string url = HttpContext.Request.GetDisplayUrl();
-            string parametroRicerca="";
             List<User> users= new List<User>();
-
             
-            if (url.Contains("?testoRicerca="))
+            if (testoRicerca!=null)
             {
-                parametroRicerca = url.Substring(url.IndexOf("?testoRicerca=") + 14);
-                users= parametroRicerca.Count() >= 3 ? operazioniUsers.VisualizzaUsers(_context, parametroRicerca):new List<User>();
+                users= testoRicerca.Count() >= 3 ? operazioniUsers.VisualizzaUsers(_context, testoRicerca) :new List<User>();
             }
             visualizzaUtentiViewModel.ListUsers=users;
             

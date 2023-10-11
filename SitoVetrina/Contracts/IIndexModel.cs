@@ -1,4 +1,4 @@
-﻿using SitoVetrina.Models;
+﻿using SitoVetrina.Models.DbModels;
 
 namespace SitoVetrina.Contracts
 {

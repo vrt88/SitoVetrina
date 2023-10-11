@@ -2,19 +2,19 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace SitoVetrina.Models
+namespace SitoVetrina.Models.DbModels
 {
     public class ProdottoCarrello
     {
-        public ProdottoCarrello(string _id="",List<ProdottoMongo> prodotti =null)
+        public ProdottoCarrello(string _id = "", List<Prodotto> prodotti = null)
         {
-            if(_id!="")
+            if (_id != "")
             {
                 this._id = new ObjectId(_id);
             }
-            if(prodotti==null)
+            if (prodotti == null)
             {
-                Prodotti = new List<ProdottoMongo>();
+                Prodotti = new List<Prodotto>();
             }
             else
             {
@@ -25,6 +25,6 @@ namespace SitoVetrina.Models
         {
         }
         public ObjectId _id { get; set; }
-        public List<ProdottoMongo> Prodotti { get; set; }
+        public List<Prodotto> Prodotti { get; set; }
     }
 }

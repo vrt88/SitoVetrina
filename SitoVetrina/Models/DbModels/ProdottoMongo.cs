@@ -2,21 +2,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace SitoVetrina.Models
+namespace SitoVetrina.Models.DbModels
 {
     public class ProdottoMongo
     {
-        public ProdottoMongo(string _id="",string nome="",decimal prezzo=0,string immagine="", string descrizione = "", int quantità=1)
+        public ProdottoMongo(string _id = "", string nome = "", decimal prezzo = 0, string immagine = "", string descrizione = "", int quantità = 1)
         {
-            if(_id!="")
+            if (_id != "")
             {
                 this._id = new ObjectId(_id);
             }
-            this.Nome = nome.Replace('"', '\'');
-            this.Descrizione = descrizione.Replace('"', '\'');
-            this.Prezzo = prezzo;
-            this.Immagine = immagine;
-            this.Quantità = quantità;
+            Nome = nome.Replace('"', '\'');
+            Descrizione = descrizione.Replace('"', '\'');
+            Prezzo = prezzo;
+            Immagine = immagine;
+            Quantità = quantità;
         }
         public ProdottoMongo()
         {
