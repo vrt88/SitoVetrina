@@ -35,13 +35,13 @@
     <div class="text-center">
         @if(Model.NumeroPagina>0)
         {
-            <a asp-controller="Home" asp-action="index" asp-route-id=@Model.NumeroPagina,Indietro class="btn text-black rounded-1 bg-dark text-white">
+            <a asp-controller="Home" asp-action="index" asp-route-pagina=@Model.NumeroPagina,Indietro class="btn text-black rounded-1 bg-dark text-white">
                 <h4>&lt&lt Indietro</h4>
             </a>
         }
         @if(Model.ListProdotti.Count==16)
         {
-            <a asp-controller="Home" asp-action="index" asp-route-id=@Model.NumeroPagina,Avanti class="btn text-black rounded-1 bg-dark text-white">
+            <a asp-controller="Home" asp-action="index" asp-route-pagina=@Model.NumeroPagina,Avanti class="btn text-black rounded-1 bg-dark text-white">
                 <h4>Avanti &gt&gt</h4>
             </a>
         }       

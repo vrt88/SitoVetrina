@@ -23,7 +23,7 @@ namespace SitoVetrina.Models.Operazioni
         {
             IMongoDatabase database = context.TakeDatabase();
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Nome",parametroRicerca);
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Nome","*"+parametroRicerca+"*");
             List<ProdottoMongo> prodotti = prodottiCollection.Find(fil).Skip(pagina * 16).Limit((pagina + 1) * 16).ToList();
             return prodotti;
         }

@@ -46,21 +46,19 @@ namespace SitoVetrina.Controllers
             return await Task.FromResult(RedirectToAction("DettagliProdotto","Prodotto",new { _id=codiceProdotto }));
         }
         [HttpGet]
-        public IActionResult DettagliProdotto()
+        public IActionResult DettagliProdotto(string id)
         {
             OperazioniProdottoMongo operazioniProdotto = new OperazioniProdottoMongo();
-            string url = HttpContext.Request.GetDisplayUrl();
             DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
-            dettagliProdottoViewModel.CodiceProdotto = url.Contains("_id=") ? url.Substring(url.IndexOf("_id=") + 4) : url.Substring(url.IndexOf("DettagliProdotto/") + 17);
+            dettagliProdottoViewModel.CodiceProdotto =id;
             dettagliProdottoViewModel.prodotto = operazioniProdotto.DettagliProdotto(MongoContext, dettagliProdottoViewModel.CodiceProdotto);
             return View(dettagliProdottoViewModel);
         }
-        public async Task<IActionResult> Modifica(InputModel input)
+        public async Task<IActionResult> Modifica(InputModel input,string id)
         {
             OperazioniProdottoMongo operazioniProdotto = new OperazioniProdottoMongo();
             OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-            string url = HttpContext.Request.GetDisplayUrl();
-            string CodiceProdotto = url.Substring(url.IndexOf("Modifica/") + 9);
+            string CodiceProdotto = id;
             ProdottoMongo prodottoVecchio = operazioniProdotto.DettagliProdotto(MongoContext,CodiceProdotto);
             string immagineVecchia = prodottoVecchio.Immagine;
             string DescrizioneVecchia = prodottoVecchio.Descrizione;
@@ -79,13 +77,12 @@ namespace SitoVetrina.Controllers
             operazioniProdotto.ModificaProdotto(MongoContext, CodiceProdotto, input.NomeProdotto.Replace('\'', '"'), DescrizioneNuova, input.Prezzo, immagineNuova);
             return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { _id = CodiceProdotto }));
         }
-        public async Task<IActionResult> Elimina()
+        public async Task<IActionResult> Elimina(string id)
         {
             OperazioniProdottoMongo operazioniProdotto = new OperazioniProdottoMongo();
             OperazioniCarrelloMongo operazioniCarrelloMongo= new OperazioniCarrelloMongo();
             OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-            string url = HttpContext.Request.GetDisplayUrl();
-            string CodiceProdotto = url.Substring(url.IndexOf("Elimina/") + 8);
+            string CodiceProdotto = id;
             ProdottoMongo prodottoVecchio = operazioniProdotto.DettagliProdotto(MongoContext, CodiceProdotto);
             string immagineVecchia = prodottoVecchio.Immagine;
             operazioniImmagine.EliminaImmagine(immagineVecchia);
@@ -94,13 +91,12 @@ namespace SitoVetrina.Controllers
             return await Task.FromResult(RedirectToAction("Index","Home"));
         }
         [HttpPost]
-        public async Task<IActionResult> AggiungiProdotto()
+        public async Task<IActionResult> AggiungiProdotto(string id)
         {      
             OperazioniProdottoMongo operazioniProdotto = new OperazioniProdottoMongo();
             DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
             OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
-            string url = HttpContext.Request.GetDisplayUrl();
-            dettagliProdottoViewModel.CodiceProdotto = url.Substring(url.IndexOf("AggiungiProdotto/") + 17);
+            dettagliProdottoViewModel.CodiceProdotto = id;
             dettagliProdottoViewModel.prodotto = operazioniProdotto.DettagliProdotto(MongoContext, dettagliProdottoViewModel.CodiceProdotto);
             dettagliProdottoViewModel.alert = operazioniCarrello.AggiungiProdottoCarrello(MongoContext, UserManager.GetUserId(User), dettagliProdottoViewModel.CodiceProdotto);
             return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
@@ -114,19 +110,17 @@ namespace SitoVetrina.Controllers
             visualizzaCarrelloViewModel.InviaProdotti(operazioniCarrello.VisualizzaProdottiCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", "")));
             return View(visualizzaCarrelloViewModel);
         }
-        public async Task<IActionResult> RimuoviProdottoCarrello()
+        public async Task<IActionResult> RimuoviProdottoCarrello(string id)
         {
             OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
-            string url = HttpContext.Request.GetDisplayUrl();
-            string codiceProdotto = url.Substring(url.IndexOf("RimuoviProdottoCarrello/") + 24);
+            string codiceProdotto = id;
             operazioniCarrello.EliminaProdottoCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
-        public async Task<IActionResult> CompraProdottoCarrello()
+        public async Task<IActionResult> CompraProdottoCarrello(string id)
         {
             OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
-            string url = HttpContext.Request.GetDisplayUrl();
-            string codiceProdotto = url.Substring(url.IndexOf("CompraProdottoCarrello/") + 23,24);
+            string codiceProdotto = id;
             operazioniCarrello.EliminaProdottoCarrello(MongoContext, UserManager.GetUserId(User).Replace("-", ""), codiceProdotto);
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
@@ -136,11 +130,10 @@ namespace SitoVetrina.Controllers
             operazioniCarrello.CompraProdottiCarrello(MongoContext,UserManager.GetUserId(User).Replace("-",""));
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
-        public async Task<IActionResult> AggiornaProdottoCarrello(VisualizzaCarrelloViewModel visualizzaCarrelloViewModel)
+        public async Task<IActionResult> AggiornaProdottoCarrello(VisualizzaCarrelloViewModel visualizzaCarrelloViewModel, string id)
         {
             OperazioniCarrelloMongo operazioniCarrello = new OperazioniCarrelloMongo();
-            string url = HttpContext.Request.GetDisplayUrl();
-            string codiceProdotto = url.Substring(url.IndexOf("AggiornaProdottoCarrello/") + 25,24);
+            string codiceProdotto = id;
             operazioniCarrello.AggiornaQuantitàProdotto(MongoContext, UserManager.GetUserId(User),codiceProdotto,Convert.ToInt16(visualizzaCarrelloViewModel.Quantità));
             return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
         }
