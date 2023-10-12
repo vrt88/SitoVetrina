@@ -20,7 +20,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<SitoVetrinaContext>();
 
 // Add services to the container.
-builder.Services.AddTransient<IProdottoRepository,ProdottoRepositoryDapper>();
+builder.Services.AddTransient<IProdottoRepository,ProdottoRepositoryMongo>();
 builder.Services.AddTransient<DapperContext>();
 
 builder.Services.AddControllersWithViews();

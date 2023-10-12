@@ -45,26 +45,19 @@ namespace SitoVetrina.Models.ProdottoRepository
                 string codiceProdotto = prodottiCollection.Find(fil).First()._id.ToString();
                 return codiceProdotto;
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public Prodotto DettagliProdotto(string codiceProdotto)
         {
-            try
-            {
-                ObjectId id = new ObjectId(codiceProdotto);
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<Prodotto> prodottiCollection = database.GetCollection<Prodotto>("Prodotti");
-                FilterDefinition<Prodotto> fil = Builders<Prodotto>.Filter.Eq("_id", id);
-                Prodotto prodotto = prodottiCollection.Find(fil).First();
-                return prodotto;
-            }
-            catch
-            {
-                return new Prodotto();
-            }
+            ObjectId id = new ObjectId(codiceProdotto);
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<Prodotto> prodottiCollection = database.GetCollection<Prodotto>("Prodotti");
+            FilterDefinition<Prodotto> fil = Builders<Prodotto>.Filter.Eq("_id", id);
+            Prodotto prodotto = prodottiCollection.Find(fil).First();
+            return prodotto;
         }
         public string ModificaProdotto(string codiceProdotto, string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
@@ -76,11 +69,11 @@ namespace SitoVetrina.Models.ProdottoRepository
                 FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
                 ProdottoMongo prodotto = new ProdottoMongo(codiceProdotto, nome, prezzo, nomeImmagine, descrizione);
                 prodottiCollection.ReplaceOne(fil, prodotto);
-                return "Nessun errore";
+                return "Prodotto modificato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string EliminaProdotto(string codiceProdotto)
@@ -92,47 +85,33 @@ namespace SitoVetrina.Models.ProdottoRepository
                 IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
                 FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
                 prodottiCollection.DeleteOne(fil);
-                return "Nessun errore";
+                return "Prodotto eliminato";
             }
-            catch (Exception ex)
+            catch 
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser)
         {
-            try
-            {
-                IMongoDatabase database = _context.TakeDatabase();
-                ObjectId id = new ObjectId(idUser.Replace("-", ""));
-                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
+            IMongoDatabase database = _context.TakeDatabase();
+            ObjectId id = new ObjectId(idUser.Replace("-", ""));
+            IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id);
-                ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
-                return Carrello.Prodotti;
-            }
-            catch
-            {
-                return new List<Prodotto>();
-            }
+            FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id);
+            ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
+            return Carrello.Prodotti;
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser, string idProdotto)
         {
-            try
-            {
-                IMongoDatabase database = _context.TakeDatabase();
-                ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
-                ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
-                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
+            IMongoDatabase database = _context.TakeDatabase();
+            ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
+            ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
+            IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
-                ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
-                return Carrello.Prodotti;
-            }
-            catch
-            {
-                return new List<Prodotto>();
-            }
+            FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
+            ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
+            return Carrello.Prodotti;
         }
         public string AggiungiProdottoCarrello(string idUser, string idProdotto)
         {
@@ -169,9 +148,9 @@ namespace SitoVetrina.Models.ProdottoRepository
 
                 return "Prodotto aggiunto al carrello";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string AggiornaQuantitàProdotto(string idUser, string idProdotto, int quantità)
@@ -187,9 +166,9 @@ namespace SitoVetrina.Models.ProdottoRepository
                 carrelloCollection.UpdateOne(fil, update);
                 return "Prodotto aggiornato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string EliminaProdottoCarrello( string idUser, string idProdotto)
@@ -209,9 +188,9 @@ namespace SitoVetrina.Models.ProdottoRepository
                 carrelloCollection.UpdateOne(fil, update);
                 return "Prodotto eliminato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string CompraProdottiCarrello(string idUser)
@@ -226,9 +205,9 @@ namespace SitoVetrina.Models.ProdottoRepository
                 prodottiCollection.DeleteOne(fil);
                 return "Prodotti Comprati";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
     }

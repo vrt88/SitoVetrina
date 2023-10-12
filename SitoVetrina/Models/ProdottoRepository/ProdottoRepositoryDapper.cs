@@ -18,8 +18,7 @@ namespace SitoVetrina.Models.ProdottoRepository
         }
         public List<Prodotto> VisualizzaProdotti(int pagina)
         {
-            string query;
-            query = $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Prodotti";
+            string query = $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Prodotti";
 
             using (var connection = _context.CreateConnection())
             {
@@ -29,8 +28,7 @@ namespace SitoVetrina.Models.ProdottoRepository
         }
         public List<Prodotto> VisualizzaProdotti(string parametroRicerca, int pagina)
         {
-            FormattableString formattableQuery;
-            formattableQuery = $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Prodotti WHERE Nome LIKE CONCAT('%',@Nome,'%')";
+            FormattableString formattableQuery= $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Prodotti WHERE Nome LIKE CONCAT('%',@Nome,'%')";
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "Nome", parametroRicerca } };
 
             string query = formattableQuery.ToString();
@@ -45,8 +43,7 @@ namespace SitoVetrina.Models.ProdottoRepository
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"INSERT INTO Prodotti(Nome,Descrizione,Prezzo,Immagine) VALUES (@Nome,@Descrizione,@Prezzo,@Immagine);";
+                FormattableString formattableQuery= $"INSERT INTO Prodotti(Nome,Descrizione,Prezzo,Immagine) VALUES (@Nome,@Descrizione,@Prezzo,@Immagine);";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "Nome", nome }, { "Descrizione", descrizione }, { "Prezzo", prezzo }, { "Immagine", nomeImmagine } };
 
@@ -56,8 +53,7 @@ namespace SitoVetrina.Models.ProdottoRepository
                     connection.Query(query, parameters);
                 }
 
-                FormattableString formattableQuery2;
-                formattableQuery2 = $"SELECT CodiceProdotto FROM Prodotti WHERE Immagine=@Immagine;";
+                FormattableString formattableQuery2=$"SELECT CodiceProdotto FROM Prodotti WHERE Immagine=@Immagine;";
 
                 Dictionary<string, object> parameters2 = new Dictionary<string, object>() { { "Immagine", nomeImmagine } };
 
@@ -69,38 +65,29 @@ namespace SitoVetrina.Models.ProdottoRepository
                 }
                 return c;
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public Prodotto DettagliProdotto(string codiceProdotto)
         {
-            try
-            {
-                FormattableString formattableQuery;
-                formattableQuery = $"SELECT CodiceProdotto,Nome,Descrizione,Prezzo,Immagine FROM Prodotti WHERE Prodotti.CodiceProdotto=@CodiceProdotto;";
+            FormattableString formattableQuery = $"SELECT CodiceProdotto,Nome,Descrizione,Prezzo,Immagine FROM Prodotti WHERE Prodotti.CodiceProdotto=@CodiceProdotto;";
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>() { { "CodiceProdotto", codiceProdotto.ToUpper() } };
+            Dictionary<string, object> parameters = new Dictionary<string, object>() { { "CodiceProdotto", codiceProdotto.ToUpper() } };
 
-                string query = formattableQuery.ToString();
-                using (var connection = _context.CreateConnection())
-                {
-                    Prodotto prodotto = connection.QuerySingle<Prodotto>(query, parameters);
-                    return prodotto;
-                }
-            }
-            catch
+            string query = formattableQuery.ToString();
+            using (var connection = _context.CreateConnection())
             {
-                return new Prodotto();
+                Prodotto prodotto = connection.QuerySingle<Prodotto>(query, parameters);
+                return prodotto;
             }
         }
         public string ModificaProdotto(string codiceProdotto, string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"UPDATE Prodotti SET Nome = @Nome,Descrizione=@Descrizione,Prezzo=@Prezzo,Immagine=@Immagine WHERE Prodotti.CodiceProdotto=@CodiceProdotto";
+                FormattableString formattableQuery = $"UPDATE Prodotti SET Nome = @Nome,Descrizione=@Descrizione,Prezzo=@Prezzo,Immagine=@Immagine WHERE Prodotti.CodiceProdotto=@CodiceProdotto";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "Nome", nome }, { "Descrizione", descrizione }, { "Prezzo", prezzo }, { "Immagine", nomeImmagine }, { "CodiceProdotto", codiceProdotto.ToUpper() } };
 
@@ -109,38 +96,36 @@ namespace SitoVetrina.Models.ProdottoRepository
                 {
                     connection.Query(query, parameters);
                 }
-                return "";
+                return "Prodotto modificato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string EliminaProdotto(string codiceProdotto)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"DELETE FROM Prodotti WHERE CodiceProdotto=@CodiceProdotto";
+                FormattableString formattableQuery= $"DELETE FROM Prodotti WHERE CodiceProdotto=@CodiceProdotto";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "CodiceProdotto", codiceProdotto.ToUpper() } };
 
                 string query = formattableQuery.ToString();
                 using (var connection = _context.CreateConnection())
                 {
-                    connection.Query(query, parameters);
+                    connection.Execute(query, parameters);
                 }
-                return "";
+                return "Prodotto eliminato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser)
         {
-            FormattableString formattableQuery;
-            formattableQuery = $"SELECT CodiceProdotto,Nome,Prezzo,Immagine,Quantità FROM Carrello,Prodotti WHERE (Prodotti.CodiceProdotto=Carrello.IdProdotto) AND (Carrello.IdUser=@IdUser);";
+            FormattableString formattableQuery= $"SELECT CodiceProdotto,Nome,Prezzo,Immagine,Quantità FROM Carrello,Prodotti WHERE (Prodotti.CodiceProdotto=Carrello.IdProdotto) AND (Carrello.IdUser=@IdUser);";
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "IdUser", idUser } };
 
             string query = formattableQuery.ToString();
@@ -153,8 +138,7 @@ namespace SitoVetrina.Models.ProdottoRepository
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser, string idProdotto)
         {
-            FormattableString formattableQuery;
-            formattableQuery = $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Carrello,Prodotti WHERE (Prodotti.CodiceProdotto=Carrello.IdProdotto) AND (Carrello.IdUser=@IdUser) AND (Prodotti.CodiceProdotto=@idProdotto);";
+            FormattableString formattableQuery= $"SELECT CodiceProdotto,Nome,Prezzo,Immagine FROM Carrello,Prodotti WHERE (Prodotti.CodiceProdotto=Carrello.IdProdotto) AND (Carrello.IdUser=@IdUser) AND (Prodotti.CodiceProdotto=@idProdotto);";
             Dictionary<string, object> parameters = new Dictionary<string, object>() { { "IdUser", idUser }, { "IdProdotto", idProdotto } };
 
             string query = formattableQuery.ToString();
@@ -188,18 +172,16 @@ namespace SitoVetrina.Models.ProdottoRepository
                 }
                 return "Prodotto aggiunto al carrello";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string AggiornaQuantitàProdotto(string idUser, string idProdotto, int quantità)
         {
             try
             {
-                FormattableString formattableQuery;
-
-                formattableQuery = $"UPDATE Carrello SET Carrello.Quantità=@Quantità WHERE (Carrello.IdUser=@IdUser) AND (Carrello.IdProdotto=@idProdotto);";
+                FormattableString formattableQuery= $"UPDATE Carrello SET Carrello.Quantità=@Quantità WHERE (Carrello.IdUser=@IdUser) AND (Carrello.IdProdotto=@idProdotto);";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "IdUser", idUser }, { "IdProdotto", idProdotto }, { "Quantità", quantità } };
 
@@ -210,51 +192,49 @@ namespace SitoVetrina.Models.ProdottoRepository
                 }
                 return "Prodotto aggiornato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string EliminaProdottoCarrello(string idUser, string idProdotto)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"DELETE FROM Carrello WHERE idProdotto=@idProdotto AND idUser=@idUser";
+                FormattableString formattableQuery = $"DELETE FROM Carrello WHERE idProdotto=@idProdotto AND idUser=@idUser";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "idProdotto", idProdotto.ToUpper() }, { "idUser", idUser } };
 
                 string query = formattableQuery.ToString();
                 using (var connection = _context.CreateConnection())
                 {
-                    connection.QueryFirst(query, parameters);
+                    connection.Execute(query, parameters);
                 }
-                return "";
+                return "Prodotto Carrello Eliminato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
         public string CompraProdottiCarrello(string idUser)
         {
             try
             {
-                FormattableString formattableQuery;
-                formattableQuery = $"DELETE FROM Carrello WHERE idUser=@idUser";
+                FormattableString formattableQuery= $"DELETE FROM Carrello WHERE idUser=@idUser";
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>() { { "idUser", idUser } };
 
                 string query = formattableQuery.ToString();
                 using (var connection = _context.CreateConnection())
                 {
-                    connection.QueryFirst(query, parameters);
+                    connection.Execute(query, parameters);
                 }
-                return "";
+                return "Prodotto comprato";
             }
-            catch (Exception ex)
+            catch
             {
-                return ex.Message;
+                return "Errore";
             }
         }
     }
