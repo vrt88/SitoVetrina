@@ -20,77 +20,62 @@ namespace SitoVetrina.Models.ProdottoRepository
         public List<Prodotto> VisualizzaProdotti(int pagina)
         {
             IMongoDatabase database = _context.TakeDatabase();
-            IMongoCollection<Prodotto> prodottiCollection = database.GetCollection<Prodotto>("Prodotti");
-            FilterDefinition<Prodotto> fil = Builders<Prodotto>.Filter.Empty;
-            List<Prodotto> prodotti = prodottiCollection.Find(fil).Skip(pagina * 16).Limit(16).ToList();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Empty;
+            List<ProdottoMongo> prodottiMongo = prodottiCollection.Find(fil).Skip(pagina * 16).Limit(16).ToList();
+            List<Prodotto> prodotti= prodottiMongo.ToList<Prodotto>();
             return prodotti;
         }
         public List<Prodotto> VisualizzaProdotti(string parametroRicerca, int pagina)
         {
             IMongoDatabase database = _context.TakeDatabase();
-            IMongoCollection<Prodotto> prodottiCollection = database.GetCollection<Prodotto>("Prodotti");
-            FilterDefinition<Prodotto> fil = Builders<Prodotto>.Filter.Eq("Nome", "*" + parametroRicerca + "*");
-            List<Prodotto> prodotti = prodottiCollection.Find(fil).Skip(pagina * 16).Limit((pagina + 1) * 16).ToList();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Nome", "*" + parametroRicerca + "*");
+            List<ProdottoMongo> prodottiMongo = prodottiCollection.Find(fil).Skip(pagina * 16).Limit((pagina + 1) * 16).ToList();
+            List<Prodotto> prodotti = prodottiMongo.ToList<Prodotto>();
             return prodotti;
         }
         public string CreaProdotto(string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
-            try
-            {
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                ProdottoMongo prodotto = new ProdottoMongo("", nome, prezzo, nomeImmagine, descrizione);
-                prodottiCollection.InsertOne(prodotto);
-                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Immagine", nomeImmagine);
-                string codiceProdotto = prodottiCollection.Find(fil).First()._id.ToString();
-                return codiceProdotto;
-            }
-            catch
-            {
-                return "Errore";
-            }
+
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            ProdottoMongo prodotto = new ProdottoMongo("", nome, prezzo, nomeImmagine, descrizione);
+            prodottiCollection.InsertOne(prodotto);
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("Immagine", nomeImmagine);
+            string codiceProdotto = prodottiCollection.Find(fil).First()._id.ToString();
+            return codiceProdotto;
+
         }
         public Prodotto DettagliProdotto(string codiceProdotto)
         {
             ObjectId id = new ObjectId(codiceProdotto);
             IMongoDatabase database = _context.TakeDatabase();
-            IMongoCollection<Prodotto> prodottiCollection = database.GetCollection<Prodotto>("Prodotti");
-            FilterDefinition<Prodotto> fil = Builders<Prodotto>.Filter.Eq("_id", id);
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
             Prodotto prodotto = prodottiCollection.Find(fil).First();
             return prodotto;
         }
-        public string ModificaProdotto(string codiceProdotto, string nome, string descrizione, decimal prezzo, string nomeImmagine)
+        public void ModificaProdotto(string codiceProdotto, string nome, string descrizione, decimal prezzo, string nomeImmagine)
         {
-            try
-            {
-                ObjectId id = new ObjectId(codiceProdotto);
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
-                ProdottoMongo prodotto = new ProdottoMongo(codiceProdotto, nome, prezzo, nomeImmagine, descrizione);
-                prodottiCollection.ReplaceOne(fil, prodotto);
-                return "Prodotto modificato";
-            }
-            catch
-            {
-                return "Errore";
-            }
+
+            ObjectId id = new ObjectId(codiceProdotto);
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+            ProdottoMongo prodotto = new ProdottoMongo(codiceProdotto, nome, prezzo, nomeImmagine, descrizione);
+            prodottiCollection.ReplaceOne(fil, prodotto);
+
         }
-        public string EliminaProdotto(string codiceProdotto)
+        public void EliminaProdotto(string codiceProdotto)
         {
-            try
-            {
-                ObjectId id = new ObjectId(codiceProdotto);
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
-                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
-                prodottiCollection.DeleteOne(fil);
-                return "Prodotto eliminato";
-            }
-            catch 
-            {
-                return "Errore";
-            }
+
+            ObjectId id = new ObjectId(codiceProdotto);
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+            prodottiCollection.DeleteOne(fil);
+
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser)
         {
@@ -99,116 +84,104 @@ namespace SitoVetrina.Models.ProdottoRepository
             IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
             FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id);
-            ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
-            return Carrello.Prodotti;
+            ProdottoCarrello Carrello = carrelloCollection.Find(fil).FirstOrDefault();
+            if (Carrello != null)
+            {
+                return Carrello.Prodotti.ToList<Prodotto>();
+            }
+            else
+            {
+                return new List<Prodotto>();
+            }
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser, string idProdotto)
         {
             IMongoDatabase database = _context.TakeDatabase();
             ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
-            ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
+            ObjectId id2 = new ObjectId(idProdotto);
             IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
             FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", id2);
-            ProdottoCarrello Carrello = carrelloCollection.Find(fil).First();
-            return Carrello.Prodotti;
-        }
-        public string AggiungiProdottoCarrello(string idUser, string idProdotto)
-        {
-            try
+            ProdottoCarrello Carrello = carrelloCollection.Find(fil).FirstOrDefault();
+            if(Carrello!= null)
             {
+                return Carrello.Prodotti.ToList<Prodotto>();
+            }
+            else
+            {
+                return new List<Prodotto>();
+            }
+        }
+        public void AggiungiProdottoCarrello(string idUser, string idProdotto)
+        {
 
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                if (VisualizzaProdottiCarrello(idUser, idProdotto).Count != 0)
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
+
+            if (VisualizzaProdottiCarrello(idUser, idProdotto).Count != 0)
+            {
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
+                UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Inc("Prodotti.$.Quantità", 1);
+
+                carrelloCollection.UpdateOne(fil, update);
+            }
+            else
+            {
+                ProdottoMongo prodotto = (ProdottoMongo)DettagliProdotto(idProdotto);
+                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", "")));
+                ProdottoCarrello carrello = carrelloCollection.Find(fil).FirstOrDefault();
+                if ((carrello != null) && (carrello.Prodotti != null))
                 {
-                    FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto));
-                    UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Inc("Prodotti.$.Quantità", 1);
-
-                    carrelloCollection.UpdateOne(fil, update);
+                    carrello.Prodotti.Add(prodotto);
+                    carrelloCollection.ReplaceOne(fil, carrello);
                 }
                 else
                 {
-                    Prodotto prodotto = DettagliProdotto(idProdotto);
-                    FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", "")));
-                    ProdottoCarrello carrello = carrelloCollection.Find(fil).FirstOrDefault();
-                    if ((carrello != null) && (carrello.Prodotti != null))
-                    {
-                        carrello.Prodotti.Add(prodotto);
-                        carrelloCollection.ReplaceOne(fil, carrello);
-                    }
-                    else
-                    {
-                        ProdottoCarrello carrelloNuovo = new ProdottoCarrello(idUser.Replace("-", ""));
-                        carrelloNuovo.Prodotti.Add(prodotto);
-                        carrelloCollection.InsertOne(carrelloNuovo);
-                    }
+                    ProdottoCarrello carrelloNuovo = new ProdottoCarrello(idUser.Replace("-", ""));
+                    carrelloNuovo.Prodotti.Add(prodotto);
+                    carrelloCollection.InsertOne(carrelloNuovo);
                 }
+            }
 
-                return "Prodotto aggiunto al carrello";
-            }
-            catch
-            {
-                return "Errore";
-            }
         }
-        public string AggiornaQuantitàProdotto(string idUser, string idProdotto, int quantità)
+        public void AggiornaQuantitàProdotto(string idUser, string idProdotto, int quantità)
         {
-            try
-            {
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto.Replace("-", "")));
-                UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Set("Prodotti.$.Quantità", quantità);
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                carrelloCollection.UpdateOne(fil, update);
-                return "Prodotto aggiornato";
-            }
-            catch
-            {
-                return "Errore";
-            }
+            FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", new ObjectId(idUser.Replace("-", ""))) & Builders<ProdottoCarrello>.Filter.Eq("Prodotti._id", new ObjectId(idProdotto.Replace("-", "")));
+            UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.Set("Prodotti.$.Quantità", quantità);
+
+            carrelloCollection.UpdateOne(fil, update);
+
         }
-        public string EliminaProdottoCarrello( string idUser, string idProdotto)
+        public void EliminaProdottoCarrello(string idUser, string idProdotto)
         {
-            try
-            {
-                IMongoDatabase database = _context.TakeDatabase();
 
-                ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
-                ObjectId id2 = new ObjectId(idProdotto.Replace("-", ""));
+            IMongoDatabase database = _context.TakeDatabase();
 
-                IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
+            ObjectId id1 = new ObjectId(idUser.Replace("-", ""));
+            ObjectId id2 = new ObjectId(idProdotto);
 
-                FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1);
-                UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.PullFilter(carrello => carrello.Prodotti, prodotto => prodotto._id == id2);
+            IMongoCollection<ProdottoCarrello> carrelloCollection = database.GetCollection<ProdottoCarrello>("Carrello");
 
-                carrelloCollection.UpdateOne(fil, update);
-                return "Prodotto eliminato";
-            }
-            catch
-            {
-                return "Errore";
-            }
+            FilterDefinition<ProdottoCarrello> fil = Builders<ProdottoCarrello>.Filter.Eq("_id", id1);
+            UpdateDefinition<ProdottoCarrello> update = Builders<ProdottoCarrello>.Update.PullFilter(carrello => carrello.Prodotti,prodotto => prodotto._id== id2);
+
+            carrelloCollection.UpdateOne(fil, update);
+
         }
-        public string CompraProdottiCarrello(string idUser)
+        public void CompraProdottiCarrello(string idUser)
         {
-            try
-            {
-                ObjectId id = new ObjectId(idUser.Replace("-", ""));
-                IMongoDatabase database = _context.TakeDatabase();
-                IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Carrello");
 
-                FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
-                prodottiCollection.DeleteOne(fil);
-                return "Prodotti Comprati";
-            }
-            catch
-            {
-                return "Errore";
-            }
+            ObjectId id = new ObjectId(idUser.Replace("-", ""));
+            IMongoDatabase database = _context.TakeDatabase();
+            IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Carrello");
+
+            FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
+            prodottiCollection.DeleteOne(fil);
         }
     }
 }

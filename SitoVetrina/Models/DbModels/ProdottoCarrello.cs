@@ -6,7 +6,7 @@ namespace SitoVetrina.Models.DbModels
 {
     public class ProdottoCarrello
     {
-        public ProdottoCarrello(string _id = "", List<Prodotto> prodotti = null)
+        public ProdottoCarrello(string _id = "", List<ProdottoMongo> prodotti = null)
         {
             if (_id != "")
             {
@@ -14,7 +14,7 @@ namespace SitoVetrina.Models.DbModels
             }
             if (prodotti == null)
             {
-                Prodotti = new List<Prodotto>();
+                Prodotti = new List<ProdottoMongo>();
             }
             else
             {
@@ -25,6 +25,6 @@ namespace SitoVetrina.Models.DbModels
         {
         }
         public ObjectId _id { get; set; }
-        public List<Prodotto> Prodotti { get; set; }
+        public List<ProdottoMongo> Prodotti { get; set; }
     }
 }

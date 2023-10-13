@@ -23,14 +23,7 @@ else
                     <div class="media-body col-11">
                         <div class="d-flex justify-content-between align-items-center w-100">
                             <strong class="text-gray-dark" style="font-size:large">@item.Nome</strong>
-                            @if (item.CodiceProdotto != new Guid())
-                            {
-                                <a asp-controller="Prodotto" asp-action="RimuoviProdottoCarrello" asp-route-id=@item.CodiceProdotto.ToString() class="btn-close"></a>
-                            }
-                            else
-                            {
-                                <a asp-controller="Prodotto" asp-action="RimuoviProdottoCarrello" asp-route-id=@item._id.ToString() class="btn-close"></a>
-                            }
+                            <a asp-controller="Prodotto" asp-action="RimuoviProdottoCarrello" asp-route-id=@item.RitornaCodiceProdotto() class ="btn-close"></a>
                         </div>  
                         <div class="col-1">
                             <select class="form-select" asp-for="Quantità">
@@ -47,16 +40,8 @@ else
                             </select>
                         </div>               
                         <span class="d-block" style="font-size:large">@string.Format("{0:F2}",@item.Prezzo*@item.Quantità) €</span>
-                        @if (item.CodiceProdotto != new Guid())
-                        {
-                            <button asp-controller="Prodotto" asp-action="AggiornaProdottoCarrello" asp-route-id=@item.CodiceProdotto.ToString() class="btn btn-info col-2">Aggiorna quantità</button>
-                            <button asp-controller="Prodotto" asp-action="CompraProdottoCarrello" asp-route-id=@item.CodiceProdotto.ToString() class="btn btn-success col-2">Compra</button>
-                        }
-                        else
-                        {
-                            <button asp-controller="Prodotto" asp-action="AggiornaProdottoCarrello" asp-route-id=@item._id.ToString() class="btn btn-info col-2">Aggiorna quantità</button>
-                            <button asp-controller="Prodotto" asp-action="CompraProdottoCarrello" asp-route-id=@item._id.ToString() class="btn btn-success col-2">Compra</button>
-                        }
+                        <button asp-controller="Prodotto" asp-action="AggiornaProdottoCarrello" asp-route-id=@item.RitornaCodiceProdotto() class="btn btn-info col-2">Aggiorna quantità</button>
+                        <button asp-controller="Prodotto" asp-action="CompraProdottoCarrello" asp-route-id=@item.RitornaCodiceProdotto() class="btn btn-success col-2">Compra</button>
                     </div>
                 </div>
             </div>

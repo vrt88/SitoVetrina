@@ -12,6 +12,7 @@ using SitoVetrina.Models.ProdottoRepository;
 using SitoVetrina.Models.ProdottoViewModels;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Policy;
 using System.Xml.Linq;
@@ -39,91 +40,170 @@ namespace SitoVetrina.Controllers
         [HttpPost]
         public async Task<IActionResult> CreaProdotto(InputModel input)
         {
-            OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-            string nomeImmagine = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
-            string codiceProdotto= _prodottoRepository.CreaProdotto( input.NomeProdotto.Replace('\'', '"'), input.Descrizione.Replace('\'', '"'), input.Prezzo, nomeImmagine);
-            return await Task.FromResult(RedirectToAction("DettagliProdotto","Prodotto",new { id=codiceProdotto }));
+            try
+            {
+                OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
+                string nomeImmagine = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
+                string codiceProdotto = _prodottoRepository.CreaProdotto(input.NomeProdotto.Replace('\'', '"'), input.Descrizione.Replace('\'', '"'), Convert.ToDecimal(input.Prezzo.Replace('.',',')), nomeImmagine);
+                return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { id = codiceProdotto }));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
+            
         }
         [HttpGet]
         public IActionResult DettagliProdotto(string id)
         {
-            DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
-            dettagliProdottoViewModel.CodiceProdotto =id;
-            dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto( dettagliProdottoViewModel.CodiceProdotto);
-            return View(dettagliProdottoViewModel);
+            try
+            {
+                DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
+                dettagliProdottoViewModel.CodiceProdotto = id;
+                dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto(dettagliProdottoViewModel.CodiceProdotto);
+                return View(dettagliProdottoViewModel);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home");
+            }
         }
         public async Task<IActionResult> Modifica(InputModel input,string id)
         {
-            OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-            string CodiceProdotto = id;
-            Prodotto prodottoVecchio = _prodottoRepository.DettagliProdotto(CodiceProdotto);
-            string immagineVecchia = prodottoVecchio.Immagine;
-            string DescrizioneVecchia = prodottoVecchio.Descrizione;
-            string immagineNuova = "";
-            if (input.Immagine != null)
+            try
             {
-                operazioniImmagine.EliminaImmagine(immagineVecchia);
-                immagineNuova = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
+                OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
+                string CodiceProdotto = id;
+                Prodotto prodottoVecchio = _prodottoRepository.DettagliProdotto(CodiceProdotto);
+                string immagineVecchia = prodottoVecchio.Immagine;
+                string DescrizioneVecchia = prodottoVecchio.Descrizione;
+                string immagineNuova = "";
+                if (input.Immagine != null)
+                {
+                    operazioniImmagine.EliminaImmagine(immagineVecchia);
+                    immagineNuova = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
+                }
+                else
+                {
+                    immagineNuova = immagineVecchia;
+                }
+                string DescrizioneNuova = "";
+                DescrizioneNuova = input.Descrizione != null ? input.Descrizione.Replace('\'', '"') : DescrizioneVecchia;
+                _prodottoRepository.ModificaProdotto(CodiceProdotto, input.NomeProdotto.Replace('\'', '"'), DescrizioneNuova, Convert.ToDecimal(input.Prezzo.Replace('.', ',')), immagineNuova);
+                return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { id = CodiceProdotto }));
             }
-            else
+            catch (Exception ex)
             {
-                immagineNuova = immagineVecchia;
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
             }
-            string DescrizioneNuova = "";
-            DescrizioneNuova = input.Descrizione != null ? input.Descrizione.Replace('\'', '"') : DescrizioneVecchia;
-            _prodottoRepository.ModificaProdotto( CodiceProdotto, input.NomeProdotto.Replace('\'', '"'), DescrizioneNuova, input.Prezzo, immagineNuova);
-            return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { id = CodiceProdotto }));
         }
         public async Task<IActionResult> Elimina(string id)
         {
-            OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-            string CodiceProdotto = id;
-            Prodotto prodottoVecchio = _prodottoRepository.DettagliProdotto( CodiceProdotto);
-            string immagineVecchia = prodottoVecchio.Immagine;
-            operazioniImmagine.EliminaImmagine(immagineVecchia);
-            _prodottoRepository.EliminaProdotto( CodiceProdotto);
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), CodiceProdotto);  
-            return await Task.FromResult(RedirectToAction("Index","Home"));
+            try
+            {
+                OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
+                string CodiceProdotto = id;
+                Prodotto prodottoVecchio = _prodottoRepository.DettagliProdotto(CodiceProdotto);
+                string immagineVecchia = prodottoVecchio.Immagine;
+                operazioniImmagine.EliminaImmagine(immagineVecchia);
+                _prodottoRepository.EliminaProdotto(CodiceProdotto);
+                _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), CodiceProdotto);
+                return await Task.FromResult(RedirectToAction("Index", "Home"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
         }
         [HttpPost]
         public async Task<IActionResult> AggiungiProdotto(string id)
-        {      
-            DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
-            dettagliProdottoViewModel.CodiceProdotto = id;
-            dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto( dettagliProdottoViewModel.CodiceProdotto);
-            dettagliProdottoViewModel.alert = _prodottoRepository.AggiungiProdottoCarrello(UserManager.GetUserId(User), dettagliProdottoViewModel.CodiceProdotto);
-            return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
+        {
+            try
+            {
+                DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
+                dettagliProdottoViewModel.CodiceProdotto = id;
+                dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto(dettagliProdottoViewModel.CodiceProdotto);
+                dettagliProdottoViewModel.alert = "Prodotto aggiunto";
+                _prodottoRepository.AggiungiProdottoCarrello(UserManager.GetUserId(User), dettagliProdottoViewModel.CodiceProdotto);
+                return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
+            }
+            catch (Exception ex)
+            {
+                DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
+                dettagliProdottoViewModel.CodiceProdotto = id;
+                dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto(dettagliProdottoViewModel.CodiceProdotto);
+                dettagliProdottoViewModel.alert = "Errore nell aggiungere il prodotto";
+                return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
+            }
         }
         [Authorize(Roles = "User")]
         [HttpGet]
         public IActionResult VisualizzaCarrello()
         {
-            VisualizzaCarrelloViewModel visualizzaCarrelloViewModel = new VisualizzaCarrelloViewModel();
-            visualizzaCarrelloViewModel.InviaProdotti(_prodottoRepository.VisualizzaProdottiCarrello(UserManager.GetUserId(User)));
-            return View(visualizzaCarrelloViewModel);
+            try
+            {
+                VisualizzaCarrelloViewModel visualizzaCarrelloViewModel = new VisualizzaCarrelloViewModel();
+                visualizzaCarrelloViewModel.InviaProdotti(_prodottoRepository.VisualizzaProdottiCarrello(UserManager.GetUserId(User)));
+                return View(visualizzaCarrelloViewModel);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home");
+            }
         }
         public async Task<IActionResult> RimuoviProdottoCarrello(string id)
         {
-            string codiceProdotto = id;
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
-            return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            try
+            {
+                string codiceProdotto = id;
+                _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
+                return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
         }
         public async Task<IActionResult> CompraProdottoCarrello(string id)
         {
-            string codiceProdotto = id;
-            _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
-            return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            try
+            {
+                string codiceProdotto = id;
+                _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
+                return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
+            
         }
         public async Task<IActionResult> CompraProdottiCarrello()
         {
-            _prodottoRepository.CompraProdottiCarrello(UserManager.GetUserId(User));
-            return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            try
+            {
+                _prodottoRepository.CompraProdottiCarrello(UserManager.GetUserId(User));
+                return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
+            
         }
         public async Task<IActionResult> AggiornaProdottoCarrello(VisualizzaCarrelloViewModel visualizzaCarrelloViewModel, string id)
-        { 
-            string codiceProdotto = id;
-            _prodottoRepository.AggiornaQuantitàProdotto(UserManager.GetUserId(User),codiceProdotto,Convert.ToInt16(visualizzaCarrelloViewModel.Quantità));
-            return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+        {
+            try
+            {
+                string codiceProdotto = id;
+                _prodottoRepository.AggiornaQuantitàProdotto(UserManager.GetUserId(User), codiceProdotto, Convert.ToInt16(visualizzaCarrelloViewModel.Quantità));
+                return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home"));
+            }
+            
         }
     }
 }

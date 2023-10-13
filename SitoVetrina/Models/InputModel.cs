@@ -25,6 +25,6 @@ namespace SitoVetrina.Models
         [Required]
         [DataType(DataType.Currency)]
         [Display(Name = "Prezzo")]
-        public decimal Prezzo { get; set; }
+        public string Prezzo { get; set; }
     }
 }

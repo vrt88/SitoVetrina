@@ -11,7 +11,7 @@ namespace SitoVetrina.Models.ProdottoViewModels
 {
     public class DettagliProdottoViewModel
     {
-        public Prodotto prodotto = new Prodotto();
+        public Prodotto prodotto;
         public string CodiceProdotto { get; set; }
         public string alert { get; set; }
         public string testoRicerca { get; set; }

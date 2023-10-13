@@ -1,31 +1,27 @@
 ﻿using MongoDB.Bson;
-using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
+using System.Security.Cryptography;
 
 namespace SitoVetrina.Models.DbModels
 {
-    public class ProdottoMongo:Prodotto
+    public class ProdottoDapper : Prodotto
     {
-        public ProdottoMongo(string _id = "", string nome = "", decimal prezzo = 0, string immagine = "", string descrizione = "", int quantità = 1)
+        public ProdottoDapper(Guid codiceProdotto, string nome = "", decimal prezzo = 0, string immagine = "", string descrizione = "", int quantità = 1)
         {
-            if (_id != "")
-            {
-                this._id = new ObjectId(_id);
-            }
+            CodiceProdotto = codiceProdotto;
             Nome = nome.Replace('"', '\'');
             Descrizione = descrizione.Replace('"', '\'');
             Prezzo = prezzo;
             Immagine = immagine;
             Quantità = quantità;
         }
-        public ProdottoMongo()
+        public ProdottoDapper()
         {
         }
         public override string RitornaCodiceProdotto()
         {
-            return _id.ToString();
+            return CodiceProdotto.ToString();
         }
-        public ObjectId _id { get; set; }
+        public Guid CodiceProdotto { get; set; }
         public override string Nome { get; set; }
         public override string Descrizione { get; set; }
         public override decimal Prezzo { get; set; }

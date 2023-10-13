@@ -18,18 +18,9 @@
                     {
                         <div class="col-3">
                             <div class="card shadow-sm" >
-                                @if (item.CodiceProdotto != new Guid())
-                                {
-                                    <div class="card-img-bottom" style="height:200px">
-                                        <a asp-controller="Prodotto" asp-action="DettagliProdotto" asp-route-id=@item.CodiceProdotto.ToString()><img class="card-img-top" src=/Images\\@item.Immagine height="200"></a>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="card-img-bottom" style="height:200px">
-                                        <a asp-controller="Prodotto" asp-action="DettagliProdotto" asp-route-id=@item._id.ToString()><img class="card-img-top" src=/Images\\@item.Immagine height="200"></a>
-                                    </div>
-                                }
+                                <div class="card-img-bottom" style="height:200px">
+                                    <a asp-controller="Prodotto" asp-action="DettagliProdotto" asp-route-id=@item.RitornaCodiceProdotto()><img class="card-img-top" src=/Images\\@item.Immagine height="200"></a>
+                                </div>
                                 <div class="card-body bg-info">
                                     <h1 style="font-size:medium">@item.Nome</h1>
                                     <h2 style="font-size:medium">@string.Format("{0:F2}",@item.Prezzo) €</h2>

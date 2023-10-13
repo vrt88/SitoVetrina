@@ -71,8 +71,6 @@ namespace SitoVetrina.Models.Operazioni
         }
         public Prodotto DettagliProdotto(DapperContext context, string codiceProdotto)
         {
-            try
-            {
                 FormattableString formattableQuery;
                 formattableQuery = $"SELECT CodiceProdotto,Nome,Descrizione,Prezzo,Immagine FROM Prodotti WHERE Prodotti.CodiceProdotto=@CodiceProdotto;";
 
@@ -84,11 +82,6 @@ namespace SitoVetrina.Models.Operazioni
                     Prodotto prodotto = connection.QuerySingle<Prodotto>(query, parameters);
                     return prodotto;
                 }
-            }
-            catch
-            {
-                return new Prodotto();
-            }
         }
         public string ModificaProdotto(DapperContext context, string codiceProdotto, string nome, string descrizione, string prezzo, string nomeImmagine)
         {
