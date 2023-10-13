@@ -37,79 +37,106 @@ namespace SitoVetrina.Controllers
         }
         public IActionResult Index(string testoRicerca,string pagina)
         {
-            IndexViewModel indexModel ;
-            List<Prodotto> prodotti;
-            string url = HttpContext.Request.GetDisplayUrl();
-            int numeroPagina=0;
-            if (url.Contains("Avanti"))
+            try
             {
-                numeroPagina = Convert.ToInt16(pagina.Replace(",Avanti",""));
-                numeroPagina++;
-                indexModel = new IndexViewModel(numeroPagina);
-            }
-            else if (url.Contains("Indietro"))
-            {
-                numeroPagina = Convert.ToInt16(pagina.Replace(",Indietro", ""));
-                numeroPagina--;
-                indexModel = new IndexViewModel(numeroPagina);
-            }
-            else
-            {
-                indexModel = new IndexViewModel(0);
-            }
-            if (testoRicerca!=null)
-            {
-                prodotti = testoRicerca.Count() >= 3 ? _prodottoRepository.VisualizzaProdotti(testoRicerca,numeroPagina) : _prodottoRepository.VisualizzaProdotti(numeroPagina);
-            }
-            else
-            {
-                prodotti = _prodottoRepository.VisualizzaProdotti(numeroPagina);
-            }
-            indexModel.InviaProdotti(prodotti);
-            return View(indexModel);
-        }
-        public IActionResult VisualizzaUtenti(string testoRicerca)
-        {
-            VisualizzaUtentiViewModel visualizzaUtentiViewModel = new VisualizzaUtentiViewModel(_roleManager.Roles.ToList());
-            OperazioniUsers operazioniUsers = new OperazioniUsers();
-
-            List<User> users= new List<User>();
-            
-            if (testoRicerca!=null)
-            {
-                users= testoRicerca.Count() >= 3 ? operazioniUsers.VisualizzaUsers(_context, testoRicerca) :new List<User>();
-            }
-            visualizzaUtentiViewModel.ListUsers=users;
-            
-            return View(visualizzaUtentiViewModel);
-        }
-        public async Task<IActionResult> ModificaRuolo(string id, List<string> ListSelectedRoles)
-        {
-
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
-            IList<IdentityRole> roles = _roleManager.Roles.ToList();
-
-            for(int i=0; i< ListSelectedRoles.Count; i++)    
-            {
-                if (ListSelectedRoles[i] != "false")
+                IndexViewModel indexModel;
+                List<Prodotto> prodotti;
+                string url = HttpContext.Request.GetDisplayUrl();
+                int numeroPagina = 0;
+                if (url.Contains("Avanti"))
                 {
-                    await _userManager.AddToRoleAsync(user, ListSelectedRoles[i]);
+                    numeroPagina = Convert.ToInt16(pagina.Replace(",Avanti", ""));
+                    numeroPagina++;
+                    indexModel = new IndexViewModel(numeroPagina);
+                }
+                else if (url.Contains("Indietro"))
+                {
+                    numeroPagina = Convert.ToInt16(pagina.Replace(",Indietro", ""));
+                    numeroPagina--;
+                    indexModel = new IndexViewModel(numeroPagina);
                 }
                 else
                 {
-                    await _userManager.RemoveFromRoleAsync(user, roles[i].Name);
+                    indexModel = new IndexViewModel(0);
                 }
+                if (testoRicerca != null)
+                {
+                    prodotti = testoRicerca.Count() >= 3 ? _prodottoRepository.VisualizzaProdotti(testoRicerca, numeroPagina) : _prodottoRepository.VisualizzaProdotti(numeroPagina);
+                }
+                else
+                {
+                    prodotti = _prodottoRepository.VisualizzaProdotti(numeroPagina);
+                }
+                indexModel.InviaProdotti(prodotti);
+                return View(indexModel); 
             }
-            return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { exception = ex.Message });
+            }
+            
+        }
+        public IActionResult VisualizzaUtenti(string testoRicerca)
+        {
+            try
+            {
+                VisualizzaUtentiViewModel visualizzaUtentiViewModel = new VisualizzaUtentiViewModel(_roleManager.Roles.ToList());
+                OperazioniUsers operazioniUsers = new OperazioniUsers();
+
+                List<User> users = new List<User>();
+
+                if (testoRicerca != null)
+                {
+                    users = testoRicerca.Count() >= 3 ? operazioniUsers.VisualizzaUsers(_context, testoRicerca) : new List<User>();
+                }
+                visualizzaUtentiViewModel.ListUsers = users;
+
+                return View(visualizzaUtentiViewModel);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Error", "Home", new { exception = ex.Message });
+            }
+        }
+        public async Task<IActionResult> ModificaRuolo(string id, List<string> ListSelectedRoles)
+        {
+            try
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(id);
+                IList<IdentityRole> roles = _roleManager.Roles.ToList();
+
+                for (int i = 0; i < ListSelectedRoles.Count; i++)
+                {
+                    if (ListSelectedRoles[i] != "false")
+                    {
+                        await _userManager.AddToRoleAsync(user, ListSelectedRoles[i]);
+                    }
+                    else
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, roles[i].Name);
+                    }
+                }
+                return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
+            }   
         }
         public async Task<IActionResult> EliminaUtente(string id)
         {
+            try
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(id);
 
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
+                await _userManager.DeleteAsync(user);
 
-            await _userManager.DeleteAsync(user);
-
-            return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));
+                return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
+            }     
         }
         public IActionResult Privacy()
         {
@@ -117,9 +144,16 @@ namespace SitoVetrina.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string exception)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if(exception=="") 
+            {
+                return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
+            else
+            {
+                return View(new ErrorViewModel { RequestId = exception ?? HttpContext.TraceIdentifier });
+            }            
         }
     }
 }

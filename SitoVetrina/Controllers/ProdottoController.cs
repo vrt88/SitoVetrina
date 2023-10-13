@@ -49,7 +49,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { RequestId = ex.Message }));
             }
             
         }
@@ -65,7 +65,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("Error", "Home", new { exception = ex.Message });
             }
         }
         public async Task<IActionResult> Modifica(InputModel input,string id)
@@ -94,7 +94,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
         }
         public async Task<IActionResult> Elimina(string id)
@@ -112,7 +112,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
         }
         [HttpPost]
@@ -148,7 +148,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("Error", "Home", new { exception = ex.Message });
             }
         }
         public async Task<IActionResult> RimuoviProdottoCarrello(string id)
@@ -161,7 +161,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
         }
         public async Task<IActionResult> CompraProdottoCarrello(string id)
@@ -174,7 +174,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
             
         }
@@ -187,7 +187,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
             
         }
@@ -201,7 +201,7 @@ namespace SitoVetrina.Controllers
             }
             catch (Exception ex)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home"));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
             }
             
         }
