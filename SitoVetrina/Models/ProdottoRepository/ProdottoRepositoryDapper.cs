@@ -180,7 +180,7 @@ namespace SitoVetrina.Models.ProdottoRepository
                 connection.Execute(query, parameters);
             }
         }
-        public void CompraProdottiCarrello(string idUser)
+        public void EliminaCarrello(string idUser)
         {
             FormattableString formattableQuery = $"DELETE FROM Carrello WHERE idUser=@idUser";
 

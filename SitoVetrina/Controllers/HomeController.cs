@@ -129,6 +129,7 @@ namespace SitoVetrina.Controllers
             {
                 ApplicationUser user = await _userManager.FindByIdAsync(id);
 
+                _prodottoRepository.EliminaCarrello(id);
                 await _userManager.DeleteAsync(user);
 
                 return await Task.FromResult(RedirectToAction("VisualizzaUtenti", "Home"));

@@ -18,9 +18,12 @@ namespace SitoVetrina.Models.Operazioni
         }
         public void EliminaImmagine(string immagine)
         {
-            DirectoryInfo dir = new DirectoryInfo("wwwroot\\Images\\");
-            FileInfo file = new FileInfo(dir.FullName + immagine);
-            file.Delete();
+            if(immagine!="")
+            {
+                DirectoryInfo dir = new DirectoryInfo("wwwroot\\Images\\");
+                FileInfo file = new FileInfo(dir.FullName + immagine);
+                file.Delete();
+            }
         }
         public string GetUniqueFileName(string fileName)
         {

@@ -75,7 +75,6 @@ namespace SitoVetrina.Models.ProdottoRepository
             IMongoCollection<ProdottoMongo> prodottiCollection = database.GetCollection<ProdottoMongo>("Prodotti");
             FilterDefinition<ProdottoMongo> fil = Builders<ProdottoMongo>.Filter.Eq("_id", id);
             prodottiCollection.DeleteOne(fil);
-
         }
         public List<Prodotto> VisualizzaProdottiCarrello(string idUser)
         {
@@ -173,7 +172,7 @@ namespace SitoVetrina.Models.ProdottoRepository
             carrelloCollection.UpdateOne(fil, update);
 
         }
-        public void CompraProdottiCarrello(string idUser)
+        public void EliminaCarrello(string idUser)
         {
 
             ObjectId id = new ObjectId(idUser.Replace("-", ""));

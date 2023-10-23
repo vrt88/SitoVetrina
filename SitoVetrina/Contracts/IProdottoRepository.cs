@@ -17,6 +17,6 @@ namespace SitoVetrina.Contracts
         public void AggiungiProdottoCarrello(string idUser, string idProdotto);
         public void AggiornaQuantitàProdotto(string idUser, string idProdotto, int quantità);
         public void EliminaProdottoCarrello(string idUser, string idProdotto);
-        public void CompraProdottiCarrello(string idUser);
+        public void EliminaCarrello(string idUser);
     }
 }

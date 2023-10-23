@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Amazon.Runtime.SharedInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,15 +44,27 @@ namespace SitoVetrina.Controllers
             try
             {
                 OperazioniImmagine operazioniImmagine = new OperazioniImmagine();
-                string nomeImmagine = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
-                string codiceProdotto = _prodottoRepository.CreaProdotto(input.NomeProdotto.Replace('\'', '"'), input.Descrizione.Replace('\'', '"'), Convert.ToDecimal(input.Prezzo.Replace('.',',')), nomeImmagine);
+                string nomeImmagine;
+                if (input.Immagine != null)
+                {
+                    nomeImmagine = operazioniImmagine.CreaImmagine(hostEnvironment, input.Immagine);
+                }
+                else
+                {
+                    return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Immagine non inserita" }));
+                }
+                string codiceProdotto = _prodottoRepository.CreaProdotto(input.NomeProdotto.Replace('\'', '"'), input.Descrizione.Replace('\'', '"'), Convert.ToDecimal(input.Prezzo.Replace('.', ',')), nomeImmagine);
                 return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { id = codiceProdotto }));
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home", new { RequestId = ex.Message }));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Il prezzo non deve contenere caratteri"}));
             }
-            
+            catch(Exception)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi"}));
+            }
+
         }
         [HttpGet]
         public IActionResult DettagliProdotto(string id)
@@ -63,9 +76,9 @@ namespace SitoVetrina.Controllers
                 dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto(dettagliProdottoViewModel.CodiceProdotto);
                 return View(dettagliProdottoViewModel);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return RedirectToAction("Error", "Home", new { exception = ex.Message });
+                return RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi" });
             }
         }
         public async Task<IActionResult> Modifica(InputModel input,string id)
@@ -92,9 +105,13 @@ namespace SitoVetrina.Controllers
                 _prodottoRepository.ModificaProdotto(CodiceProdotto, input.NomeProdotto.Replace('\'', '"'), DescrizioneNuova, Convert.ToDecimal(input.Prezzo.Replace('.', ',')), immagineNuova);
                 return await Task.FromResult(RedirectToAction("DettagliProdotto", "Prodotto", new { id = CodiceProdotto }));
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Il prezzo non deve contenere caratteri" }));
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi" }));
             }
         }
         public async Task<IActionResult> Elimina(string id)
@@ -110,13 +127,13 @@ namespace SitoVetrina.Controllers
                 _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), CodiceProdotto);
                 return await Task.FromResult(RedirectToAction("Index", "Home"));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi" }));
             }
         }
         [HttpPost]
-        public async Task<IActionResult> AggiungiProdotto(string id)
+        public async Task<IActionResult> AggiungiProdotto(string id, Prodotto prodotto)
         {
             try
             {
@@ -127,12 +144,10 @@ namespace SitoVetrina.Controllers
                 _prodottoRepository.AggiungiProdottoCarrello(UserManager.GetUserId(User), dettagliProdottoViewModel.CodiceProdotto);
                 return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
             }
-            catch (Exception ex)
+            catch
             {
                 DettagliProdottoViewModel dettagliProdottoViewModel = new DettagliProdottoViewModel();
-                dettagliProdottoViewModel.CodiceProdotto = id;
-                dettagliProdottoViewModel.prodotto = _prodottoRepository.DettagliProdotto(dettagliProdottoViewModel.CodiceProdotto);
-                dettagliProdottoViewModel.alert = "Errore nell aggiungere il prodotto";
+
                 return await Task.FromResult(View("DettagliProdotto", dettagliProdottoViewModel));
             }
         }
@@ -146,9 +161,9 @@ namespace SitoVetrina.Controllers
                 visualizzaCarrelloViewModel.InviaProdotti(_prodottoRepository.VisualizzaProdottiCarrello(UserManager.GetUserId(User)));
                 return View(visualizzaCarrelloViewModel);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return RedirectToAction("Error", "Home", new { exception = ex.Message });
+                return RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi" });
             }
         }
         public async Task<IActionResult> RimuoviProdottoCarrello(string id)
@@ -159,9 +174,9 @@ namespace SitoVetrina.Controllers
                 _prodottoRepository.EliminaProdottoCarrello(UserManager.GetUserId(User), codiceProdotto);
                 return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = ex.Message }));
+                return await Task.FromResult(RedirectToAction("Error", "Home", new { exception = "Errore generico, riprovare più tardi" }));
             }
         }
         public async Task<IActionResult> CompraProdottoCarrello(string id)
@@ -182,7 +197,7 @@ namespace SitoVetrina.Controllers
         {
             try
             {
-                _prodottoRepository.CompraProdottiCarrello(UserManager.GetUserId(User));
+                _prodottoRepository.EliminaCarrello(UserManager.GetUserId(User));
                 return await Task.FromResult(RedirectToAction("VisualizzaCarrello", "Prodotto"));
             }
             catch (Exception ex)
